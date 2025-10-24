@@ -1,0 +1,604 @@
+{
+  "trade_data": [
+  {
+    "drug_id": 1,
+    "drug_name": "Atorvastatin",
+    "therapeutic_area": "Cardiovascular",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 1200, "unit_price_usd": 50, "total_value_usd": 60000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 800, "unit_price_usd": 52, "total_value_usd": 41600},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 48, "total_value_usd": 24000},
+      {"year": 2023, "country": "Brazil", "direction": "export", "quantity_kg": 600, "unit_price_usd": 51, "total_value_usd": 30600},
+      {"year": 2023, "country": "UK", "direction": "import", "quantity_kg": 300, "unit_price_usd": 50, "total_value_usd": 15000}
+    ]
+  },
+  {
+    "drug_id": 2,
+    "drug_name": "Metoprolol",
+    "therapeutic_area": "Cardiovascular",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 900, "unit_price_usd": 40, "total_value_usd": 36000},
+      {"year": 2024, "country": "Canada", "direction": "export", "quantity_kg": 600, "unit_price_usd": 42, "total_value_usd": 25200},
+      {"year": 2024, "country": "Mexico", "direction": "import", "quantity_kg": 400, "unit_price_usd": 39, "total_value_usd": 15600},
+      {"year": 2023, "country": "Germany", "direction": "export", "quantity_kg": 700, "unit_price_usd": 41, "total_value_usd": 28700},
+      {"year": 2023, "country": "France", "direction": "import", "quantity_kg": 300, "unit_price_usd": 40, "total_value_usd": 12000}
+    ]
+  },
+  {
+    "drug_id": 3,
+    "drug_name": "Losartan",
+    "therapeutic_area": "Cardiovascular",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 1000, "unit_price_usd": 45, "total_value_usd": 45000},
+      {"year": 2024, "country": "UK", "direction": "export", "quantity_kg": 700, "unit_price_usd": 46, "total_value_usd": 32200},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 44, "total_value_usd": 22000},
+      {"year": 2023, "country": "Germany", "direction": "export", "quantity_kg": 600, "unit_price_usd": 45, "total_value_usd": 27000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 350, "unit_price_usd": 44, "total_value_usd": 15400}
+    ]
+  },
+  {
+    "drug_id": 4,
+    "drug_name": "Amlodipine",
+    "therapeutic_area": "Cardiovascular",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 1100, "unit_price_usd": 48, "total_value_usd": 52800},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 750, "unit_price_usd": 49, "total_value_usd": 36750},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 47, "total_value_usd": 23500},
+      {"year": 2023, "country": "France", "direction": "export", "quantity_kg": 650, "unit_price_usd": 48, "total_value_usd": 31200},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 400, "unit_price_usd": 46, "total_value_usd": 18400}
+    ]
+  },
+  {
+    "drug_id": 5,
+    "drug_name": "Clopidogrel",
+    "therapeutic_area": "Cardiovascular",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 950, "unit_price_usd": 55, "total_value_usd": 52250},
+      {"year": 2024, "country": "Canada", "direction": "export", "quantity_kg": 600, "unit_price_usd": 56, "total_value_usd": 33600},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 450, "unit_price_usd": 54, "total_value_usd": 24300},
+      {"year": 2023, "country": "Germany", "direction": "export", "quantity_kg": 700, "unit_price_usd": 55, "total_value_usd": 38500},
+      {"year": 2023, "country": "UK", "direction": "import", "quantity_kg": 300, "unit_price_usd": 53, "total_value_usd": 15900}
+    ]
+  },
+  {
+    "drug_id": 6,
+    "drug_name": "Metformin",
+    "therapeutic_area": "Diabetes",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 2000, "unit_price_usd": 20, "total_value_usd": 40000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 1500, "unit_price_usd": 21, "total_value_usd": 31500},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 1200, "unit_price_usd": 19, "total_value_usd": 22800},
+      {"year": 2023, "country": "Brazil", "direction": "export", "quantity_kg": 1400, "unit_price_usd": 20, "total_value_usd": 28000},
+      {"year": 2023, "country": "UK", "direction": "import", "quantity_kg": 800, "unit_price_usd": 19, "total_value_usd": 15200}
+    ]
+  },
+  {
+    "drug_id": 7,
+    "drug_name": "Glimepiride",
+    "therapeutic_area": "Diabetes",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 850, "unit_price_usd": 28, "total_value_usd": 23800},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 600, "unit_price_usd": 29, "total_value_usd": 17400},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 27, "total_value_usd": 13500},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 700, "unit_price_usd": 28, "total_value_usd": 19600},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 400, "unit_price_usd": 27, "total_value_usd": 10800}
+    ]
+  },
+  {
+    "drug_id": 8,
+    "drug_name": "Sitagliptin",
+    "therapeutic_area": "Diabetes",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 900, "unit_price_usd": 75, "total_value_usd": 67500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 650, "unit_price_usd": 76, "total_value_usd": 49400},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 74, "total_value_usd": 37000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 600, "unit_price_usd": 75, "total_value_usd": 45000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 400, "unit_price_usd": 74, "total_value_usd": 29600}
+    ]
+  },
+  {
+    "drug_id": 9,
+    "drug_name": "Insulin Glargine",
+    "therapeutic_area": "Diabetes",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 700, "unit_price_usd": 120, "total_value_usd": 84000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 500, "unit_price_usd": 125, "total_value_usd": 62500},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 115, "total_value_usd": 46000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 600, "unit_price_usd": 120, "total_value_usd": 72000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 300, "unit_price_usd": 115, "total_value_usd": 34500}
+    ]
+  },
+  {
+    "drug_id": 10,
+    "drug_name": "Empagliflozin",
+    "therapeutic_area": "Diabetes",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 600, "unit_price_usd": 95, "total_value_usd": 57000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 450, "unit_price_usd": 97, "total_value_usd": 43650},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 350, "unit_price_usd": 93, "total_value_usd": 32550},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 500, "unit_price_usd": 95, "total_value_usd": 47500},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 300, "unit_price_usd": 92, "total_value_usd": 27600}
+    ]
+  },
+  {
+    "drug_id": 11,
+    "drug_name": "Salbutamol",
+    "therapeutic_area": "Respiratory",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 800, "unit_price_usd": 35, "total_value_usd": 28000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 600, "unit_price_usd": 36, "total_value_usd": 21600},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 34, "total_value_usd": 17000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 550, "unit_price_usd": 35, "total_value_usd": 19250},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 400, "unit_price_usd": 34, "total_value_usd": 13600}
+    ]
+  },
+  {
+    "drug_id": 12,
+    "drug_name": "Budesonide",
+    "therapeutic_area": "Respiratory",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 700, "unit_price_usd": 42, "total_value_usd": 29400},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 500, "unit_price_usd": 43, "total_value_usd": 21500},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 41, "total_value_usd": 16400},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 600, "unit_price_usd": 42, "total_value_usd": 25200},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 300, "unit_price_usd": 41, "total_value_usd": 12300}
+    ]
+  },
+  {
+    "drug_id": 13,
+    "drug_name": "Montelukast",
+    "therapeutic_area": "Respiratory",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 600, "unit_price_usd": 38, "total_value_usd": 22800},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 450, "unit_price_usd": 39, "total_value_usd": 17550},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 37, "total_value_usd": 14800},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 500, "unit_price_usd": 38, "total_value_usd": 19000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 350, "unit_price_usd": 37, "total_value_usd": 12950}
+    ]
+  },
+  {
+    "drug_id": 14,
+    "drug_name": "Tiotropium",
+    "therapeutic_area": "Respiratory",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 500, "unit_price_usd": 90, "total_value_usd": 45000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 400, "unit_price_usd": 92, "total_value_usd": 36800},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 88, "total_value_usd": 26400},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 350, "unit_price_usd": 90, "total_value_usd": 31500},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 250, "unit_price_usd": 88, "total_value_usd": 22000}
+    ]
+  },
+  {
+    "drug_id": 15,
+    "drug_name": "Formoterol",
+    "therapeutic_area": "Respiratory",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 550, "unit_price_usd": 85, "total_value_usd": 46750},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 450, "unit_price_usd": 86, "total_value_usd": 38700},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 84, "total_value_usd": 33600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 500, "unit_price_usd": 85, "total_value_usd": 42500},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 300, "unit_price_usd": 84, "total_value_usd": 25200}
+    ]
+  },
+  {
+    "drug_id": 16,
+    "drug_name": "Sertraline",
+    "therapeutic_area": "CNS/Mental Health",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 500, "unit_price_usd": 45, "total_value_usd": 22500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 400, "unit_price_usd": 46, "total_value_usd": 18400},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 44, "total_value_usd": 13200},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 350, "unit_price_usd": 45, "total_value_usd": 15750},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 250, "unit_price_usd": 44, "total_value_usd": 11000}
+    ]
+  },
+  {
+    "drug_id": 17,
+    "drug_name": "Escitalopram",
+    "therapeutic_area": "CNS/Mental Health",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 450, "unit_price_usd": 50, "total_value_usd": 22500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 350, "unit_price_usd": 51, "total_value_usd": 17850},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 49, "total_value_usd": 14700},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 400, "unit_price_usd": 50, "total_value_usd": 20000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 250, "unit_price_usd": 49, "total_value_usd": 12250}
+    ]
+  },
+  {
+    "drug_id": 18,
+    "drug_name": "Risperidone",
+    "therapeutic_area": "CNS/Mental Health",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 600, "unit_price_usd": 55, "total_value_usd": 33000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 500, "unit_price_usd": 56, "total_value_usd": 28000},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 54, "total_value_usd": 21600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 450, "unit_price_usd": 55, "total_value_usd": 24750},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 350, "unit_price_usd": 54, "total_value_usd": 18900}
+    ]
+  },
+  {
+    "drug_id": 19,
+    "drug_name": "Donepezil",
+    "therapeutic_area": "CNS/Mental Health",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 400, "unit_price_usd": 60, "total_value_usd": 24000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 350, "unit_price_usd": 61, "total_value_usd": 21350},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 59, "total_value_usd": 17700},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 320, "unit_price_usd": 60, "total_value_usd": 19200},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 250, "unit_price_usd": 59, "total_value_usd": 14750}
+    ]
+  },
+  {
+    "drug_id": 20,
+    "drug_name": "Gabapentin",
+    "therapeutic_area": "CNS/Mental Health",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 550, "unit_price_usd": 40, "total_value_usd": 22000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 450, "unit_price_usd": 41, "total_value_usd": 18450},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 350, "unit_price_usd": 39, "total_value_usd": 13650},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 400, "unit_price_usd": 40, "total_value_usd": 16000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 300, "unit_price_usd": 39, "total_value_usd": 11700}
+    ]
+  },
+  {
+    "drug_id": 21,
+    "drug_name": "Imatinib",
+    "therapeutic_area": "Oncology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 300, "unit_price_usd": 200, "total_value_usd": 60000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 250, "unit_price_usd": 205, "total_value_usd": 51250},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 200, "unit_price_usd": 198, "total_value_usd": 39600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 220, "unit_price_usd": 200, "total_value_usd": 44000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 180, "unit_price_usd": 198, "total_value_usd": 35640}
+    ]
+  },
+  {
+    "drug_id": 22,
+    "drug_name": "Tamoxifen",
+    "therapeutic_area": "Oncology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 400, "unit_price_usd": 120, "total_value_usd": 48000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 350, "unit_price_usd": 125, "total_value_usd": 43750},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 118, "total_value_usd": 35400},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 320, "unit_price_usd": 120, "total_value_usd": 38400},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 250, "unit_price_usd": 118, "total_value_usd": 29500}
+    ]
+  },
+  {
+    "drug_id": 23,
+    "drug_name": "Capecitabine",
+    "therapeutic_area": "Oncology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 350, "unit_price_usd": 150, "total_value_usd": 52500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 300, "unit_price_usd": 152, "total_value_usd": 45600},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 250, "unit_price_usd": 148, "total_value_usd": 37000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 280, "unit_price_usd": 150, "total_value_usd": 42000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 220, "unit_price_usd": 148, "total_value_usd": 32560}
+    ]
+  },
+  {
+    "drug_id": 24,
+    "drug_name": "Paclitaxel",
+    "therapeutic_area": "Oncology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 200, "unit_price_usd": 300, "total_value_usd": 60000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 180, "unit_price_usd": 305, "total_value_usd": 54900},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 150, "unit_price_usd": 298, "total_value_usd": 44700},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 160, "unit_price_usd": 300, "total_value_usd": 48000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 140, "unit_price_usd": 298, "total_value_usd": 41720}
+    ]
+  },
+  {
+    "drug_id": 25,
+    "drug_name": "Carboplatin",
+    "therapeutic_area": "Oncology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 250, "unit_price_usd": 250, "total_value_usd": 62500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 220, "unit_price_usd": 255, "total_value_usd": 56100},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 180, "unit_price_usd": 248, "total_value_usd": 44640},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 200, "unit_price_usd": 250, "total_value_usd": 50000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 160, "unit_price_usd": 248, "total_value_usd": 39680}
+    ]
+  },
+  {
+    "drug_id": 26,
+    "drug_name": "Amoxicillin",
+    "therapeutic_area": "Infectious Disease",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 1200, "unit_price_usd": 30, "total_value_usd": 36000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 900, "unit_price_usd": 31, "total_value_usd": 27900},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 700, "unit_price_usd": 29, "total_value_usd": 20300},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 800, "unit_price_usd": 30, "total_value_usd": 24000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 600, "unit_price_usd": 29, "total_value_usd": 17400}
+    ]
+  },
+  {
+    "drug_id": 27,
+    "drug_name": "Azithromycin",
+    "therapeutic_area": "Infectious Disease",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 800, "unit_price_usd": 50, "total_value_usd": 40000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 600, "unit_price_usd": 51, "total_value_usd": 30600},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 49, "total_value_usd": 24500},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 650, "unit_price_usd": 50, "total_value_usd": 32500},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 400, "unit_price_usd": 49, "total_value_usd": 19600}
+    ]
+  },
+  {
+    "drug_id": 28,
+    "drug_name": "Ciprofloxacin",
+    "therapeutic_area": "Infectious Disease",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 700, "unit_price_usd": 60, "total_value_usd": 42000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 500, "unit_price_usd": 62, "total_value_usd": 31000},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 58, "total_value_usd": 23200},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 600, "unit_price_usd": 60, "total_value_usd": 36000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 350, "unit_price_usd": 58, "total_value_usd": 20300}
+    ]
+  },
+  {
+    "drug_id": 29,
+    "drug_name": "Oseltamivir",
+    "therapeutic_area": "Infectious Disease",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 600, "unit_price_usd": 80, "total_value_usd": 48000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 500, "unit_price_usd": 82, "total_value_usd": 41000},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 78, "total_value_usd": 31200},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 450, "unit_price_usd": 80, "total_value_usd": 36000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 350, "unit_price_usd": 78, "total_value_usd": 27300}
+    ]
+  },
+  {
+    "drug_id": 30,
+    "drug_name": "Acyclovir",
+    "therapeutic_area": "Infectious Disease",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 500, "unit_price_usd": 70, "total_value_usd": 35000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 400, "unit_price_usd": 72, "total_value_usd": 28800},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 68, "total_value_usd": 20400},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 350, "unit_price_usd": 70, "total_value_usd": 24500},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 250, "unit_price_usd": 68, "total_value_usd": 17000}
+    ]
+  },
+  {
+    "drug_id": 31,
+    "drug_name": "Omeprazole",
+    "therapeutic_area": "Gastro",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 900, "unit_price_usd": 35, "total_value_usd": 31500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 700, "unit_price_usd": 36, "total_value_usd": 25200},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 600, "unit_price_usd": 34, "total_value_usd": 20400},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 650, "unit_price_usd": 35, "total_value_usd": 22750},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 500, "unit_price_usd": 34, "total_value_usd": 17000}
+    ]
+  },
+  {
+    "drug_id": 32,
+    "drug_name": "Pantoprazole",
+    "therapeutic_area": "Gastro",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 850, "unit_price_usd": 38, "total_value_usd": 32300},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 650, "unit_price_usd": 39, "total_value_usd": 25350},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 550, "unit_price_usd": 37, "total_value_usd": 20350},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 600, "unit_price_usd": 38, "total_value_usd": 22800},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 450, "unit_price_usd": 37, "total_value_usd": 16650}
+    ]
+  },
+  {
+    "drug_id": 33,
+    "drug_name": "Ondansetron",
+    "therapeutic_area": "Gastro",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 700, "unit_price_usd": 45, "total_value_usd": 31500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 550, "unit_price_usd": 46, "total_value_usd": 25300},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 44, "total_value_usd": 22000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 550, "unit_price_usd": 45, "total_value_usd": 24750},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 400, "unit_price_usd": 44, "total_value_usd": 17600}
+    ]
+  },
+  {
+    "drug_id": 34,
+    "drug_name": "Loperamide",
+    "therapeutic_area": "Gastro",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 600, "unit_price_usd": 30, "total_value_usd": 18000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 500, "unit_price_usd": 31, "total_value_usd": 15500},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 29, "total_value_usd": 11600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 450, "unit_price_usd": 30, "total_value_usd": 13500},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 350, "unit_price_usd": 29, "total_value_usd": 10150}
+    ]
+  },
+  {
+    "drug_id": 35,
+    "drug_name": "Mesalamine",
+    "therapeutic_area": "Gastro",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 400, "unit_price_usd": 80, "total_value_usd": 32000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 350, "unit_price_usd": 82, "total_value_usd": 28700},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 78, "total_value_usd": 23400},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 320, "unit_price_usd": 80, "total_value_usd": 25600},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 250, "unit_price_usd": 78, "total_value_usd": 19500}
+    ]
+  },
+  {
+    "drug_id": 36,
+    "drug_name": "Ibuprofen",
+    "therapeutic_area": "Pain/Inflammation",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 1200, "unit_price_usd": 15, "total_value_usd": 18000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 1000, "unit_price_usd": 16, "total_value_usd": 16000},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 900, "unit_price_usd": 14, "total_value_usd": 12600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 950, "unit_price_usd": 15, "total_value_usd": 14250},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 800, "unit_price_usd": 14, "total_value_usd": 11200}
+    ]
+  },
+  {
+    "drug_id": 37,
+    "drug_name": "Diclofenac",
+    "therapeutic_area": "Pain/Inflammation",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 1000, "unit_price_usd": 20, "total_value_usd": 20000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 800, "unit_price_usd": 21, "total_value_usd": 16800},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 700, "unit_price_usd": 19, "total_value_usd": 13300},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 750, "unit_price_usd": 20, "total_value_usd": 15000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 600, "unit_price_usd": 19, "total_value_usd": 11400}
+    ]
+  },
+  {
+    "drug_id": 38,
+    "drug_name": "Celecoxib",
+    "therapeutic_area": "Pain/Inflammation",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 600, "unit_price_usd": 50, "total_value_usd": 30000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 500, "unit_price_usd": 52, "total_value_usd": 26000},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 450, "unit_price_usd": 48, "total_value_usd": 21600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 480, "unit_price_usd": 50, "total_value_usd": 24000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 400, "unit_price_usd": 48, "total_value_usd": 19200}
+    ]
+  },
+  {
+    "drug_id": 39,
+    "drug_name": "Tramadol",
+    "therapeutic_area": "Pain/Inflammation",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 500, "unit_price_usd": 100, "total_value_usd": 50000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 400, "unit_price_usd": 102, "total_value_usd": 40800},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 350, "unit_price_usd": 98, "total_value_usd": 34300},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 380, "unit_price_usd": 100, "total_value_usd": 38000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 300, "unit_price_usd": 98, "total_value_usd": 29400}
+    ]
+  },
+  {
+    "drug_id": 40,
+    "drug_name": "Acetaminophen",
+    "therapeutic_area": "Pain/Inflammation",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 1500, "unit_price_usd": 10, "total_value_usd": 15000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 1200, "unit_price_usd": 11, "total_value_usd": 13200},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 1000, "unit_price_usd": 9, "total_value_usd": 9000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 1100, "unit_price_usd": 10, "total_value_usd": 11000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 900, "unit_price_usd": 9, "total_value_usd": 8100}
+    ]
+  },
+  {
+    "drug_id": 41,
+    "drug_name": "Adalimumab",
+    "therapeutic_area": "Immunology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 200, "unit_price_usd": 1500, "total_value_usd": 300000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 180, "unit_price_usd": 1520, "total_value_usd": 273600},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 150, "unit_price_usd": 1480, "total_value_usd": 222000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 170, "unit_price_usd": 1500, "total_value_usd": 255000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 140, "unit_price_usd": 1480, "total_value_usd": 207200}
+    ]
+  },
+  {
+    "drug_id": 42,
+    "drug_name": "Methotrexate",
+    "therapeutic_area": "Immunology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 500, "unit_price_usd": 80, "total_value_usd": 40000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 450, "unit_price_usd": 82, "total_value_usd": 36900},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 400, "unit_price_usd": 78, "total_value_usd": 31200},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 420, "unit_price_usd": 80, "total_value_usd": 33600},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 380, "unit_price_usd": 78, "total_value_usd": 29640}
+    ]
+  },
+  {
+    "drug_id": 43,
+    "drug_name": "Hydroxychloroquine",
+    "therapeutic_area": "Immunology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 300, "unit_price_usd": 45, "total_value_usd": 13500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 280, "unit_price_usd": 46, "total_value_usd": 12880},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 250, "unit_price_usd": 44, "total_value_usd": 11000},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 260, "unit_price_usd": 45, "total_value_usd": 11700},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 230, "unit_price_usd": 44, "total_value_usd": 10120}
+    ]
+  },
+  {
+    "drug_id": 44,
+    "drug_name": "Azathioprine",
+    "therapeutic_area": "Immunology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 250, "unit_price_usd": 90, "total_value_usd": 22500},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 220, "unit_price_usd": 92, "total_value_usd": 20240},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 200, "unit_price_usd": 88, "total_value_usd": 17600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 210, "unit_price_usd": 90, "total_value_usd": 18900},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 190, "unit_price_usd": 88, "total_value_usd": 16720}
+    ]
+  },
+  {
+    "drug_id": 45,
+    "drug_name": "Prednisone",
+    "therapeutic_area": "Immunology",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 400, "unit_price_usd": 25, "total_value_usd": 10000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 350, "unit_price_usd": 26, "total_value_usd": 9100},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 300, "unit_price_usd": 24, "total_value_usd": 7200},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 320, "unit_price_usd": 25, "total_value_usd": 8000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 280, "unit_price_usd": 24, "total_value_usd": 6720}
+    ]
+  },
+  {
+    "drug_id": 46,
+    "drug_name": "Levothyroxine",
+    "therapeutic_area": "Endocrine",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 600, "unit_price_usd": 50, "total_value_usd": 30000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 550, "unit_price_usd": 51, "total_value_usd": 28050},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 500, "unit_price_usd": 49, "total_value_usd": 24500},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 520, "unit_price_usd": 50, "total_value_usd": 26000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 480, "unit_price_usd": 49, "total_value_usd": 23520}
+    ]
+  },
+  {
+    "drug_id": 47,
+    "drug_name": "Alendronate",
+    "therapeutic_area": "Endocrine",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 300, "unit_price_usd": 120, "total_value_usd": 36000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 280, "unit_price_usd": 122, "total_value_usd": 34160},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 250, "unit_price_usd": 118, "total_value_usd": 29500},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 260, "unit_price_usd": 120, "total_value_usd": 31200},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 240, "unit_price_usd": 118, "total_value_usd": 28320}
+    ]
+  },
+  {
+    "drug_id": 48,
+    "drug_name": "Testosterone",
+    "therapeutic_area": "Endocrine",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 150, "unit_price_usd": 900, "total_value_usd": 135000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 140, "unit_price_usd": 920, "total_value_usd": 128800},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 120, "unit_price_usd": 880, "total_value_usd": 105600},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 130, "unit_price_usd": 900, "total_value_usd": 117000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 110, "unit_price_usd": 880, "total_value_usd": 96800}
+    ]
+  },
+    {
+    "drug_id": 49,
+    "drug_name": "Estradiol",
+    "therapeutic_area": "Endocrine",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 200, "unit_price_usd": 400, "total_value_usd": 80000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 180, "unit_price_usd": 410, "total_value_usd": 73800},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 150, "unit_price_usd": 390, "total_value_usd": 58500},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 170, "unit_price_usd": 400, "total_value_usd": 68000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 160, "unit_price_usd": 390, "total_value_usd": 62400}
+    ]
+  },
+  {
+    "drug_id": 50,
+    "drug_name": "Cabergoline",
+    "therapeutic_area": "Endocrine",
+    "trade_data": [
+      {"year": 2024, "country": "USA", "direction": "export", "quantity_kg": 100, "unit_price_usd": 1200, "total_value_usd": 120000},
+      {"year": 2024, "country": "Germany", "direction": "export", "quantity_kg": 90, "unit_price_usd": 1220, "total_value_usd": 109800},
+      {"year": 2024, "country": "India", "direction": "import", "quantity_kg": 80, "unit_price_usd": 1180, "total_value_usd": 94400},
+      {"year": 2023, "country": "UK", "direction": "export", "quantity_kg": 85, "unit_price_usd": 1200, "total_value_usd": 102000},
+      {"year": 2023, "country": "Brazil", "direction": "import", "quantity_kg": 75, "unit_price_usd": 1180, "total_value_usd": 88500}
+    ]
+  }
+]
+}

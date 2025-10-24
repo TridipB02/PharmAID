@@ -1,0 +1,605 @@
+{
+  "market_data": [
+  {
+    "drug_id": 1,
+    "drug_name": "Atorvastatin",
+    "therapeutic_area": "Cardiovascular",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 245.6, "prescriptions_million": 4.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 230.2, "prescriptions_million": 4.2, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 218.3, "prescriptions_million": 4.0, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 210.1, "prescriptions_million": 3.9, "market_trend": "decreasing"},
+      {"year": 2020, "sales_usd_million": 200.0, "prescriptions_million": 3.7, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 2,
+    "drug_name": "Metoprolol",
+    "therapeutic_area": "Cardiovascular",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 180.4, "prescriptions_million": 3.2, "market_trend": "stable"},
+      {"year": 2023, "sales_usd_million": 175.0, "prescriptions_million": 3.1, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 170.8, "prescriptions_million": 3.0, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 165.5, "prescriptions_million": 2.9, "market_trend": "decreasing"},
+      {"year": 2020, "sales_usd_million": 160.0, "prescriptions_million": 2.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 3,
+    "drug_name": "Losartan",
+    "therapeutic_area": "Cardiovascular",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 95.7, "prescriptions_million": 2.1, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 92.0, "prescriptions_million": 2.0, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 90.5, "prescriptions_million": 1.9, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 88.0, "prescriptions_million": 1.8, "market_trend": "decreasing"},
+      {"year": 2020, "sales_usd_million": 85.0, "prescriptions_million": 1.7, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 4,
+    "drug_name": "Amlodipine",
+    "therapeutic_area": "Cardiovascular",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 150.3, "prescriptions_million": 3.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 145.0, "prescriptions_million": 3.3, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 140.5, "prescriptions_million": 3.2, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 135.0, "prescriptions_million": 3.0, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 130.0, "prescriptions_million": 2.9, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 5,
+    "drug_name": "Clopidogrel",
+    "therapeutic_area": "Cardiovascular",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 120.5, "prescriptions_million": 2.7, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 115.0, "prescriptions_million": 2.6, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 110.3, "prescriptions_million": 2.5, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 105.0, "prescriptions_million": 2.4, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 100.0, "prescriptions_million": 2.3, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 6,
+    "drug_name": "Metformin",
+    "therapeutic_area": "Diabetes",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 300.0, "prescriptions_million": 6.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 290.0, "prescriptions_million": 6.3, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 280.0, "prescriptions_million": 6.0, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 270.0, "prescriptions_million": 5.8, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 260.0, "prescriptions_million": 5.5, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 7,
+    "drug_name": "Glimepiride",
+    "therapeutic_area": "Diabetes",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 90.0, "prescriptions_million": 2.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 85.5, "prescriptions_million": 1.9, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 82.0, "prescriptions_million": 1.8, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 80.0, "prescriptions_million": 1.7, "market_trend": "decreasing"},
+      {"year": 2020, "sales_usd_million": 78.0, "prescriptions_million": 1.6, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 8,
+    "drug_name": "Sitagliptin",
+    "therapeutic_area": "Diabetes",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 110.5, "prescriptions_million": 2.4, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 105.0, "prescriptions_million": 2.3, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 100.0, "prescriptions_million": 2.2, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 95.0, "prescriptions_million": 2.1, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 90.0, "prescriptions_million": 2.0, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 9,
+    "drug_name": "Insulin Glargine",
+    "therapeutic_area": "Diabetes",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 220.0, "prescriptions_million": 5.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 210.0, "prescriptions_million": 4.8, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 200.0, "prescriptions_million": 4.5, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 190.0, "prescriptions_million": 4.2, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 180.0, "prescriptions_million": 4.0, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 10,
+    "drug_name": "Empagliflozin",
+    "therapeutic_area": "Diabetes",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 130.0, "prescriptions_million": 2.7, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 125.0, "prescriptions_million": 2.5, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 120.0, "prescriptions_million": 2.4, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 115.0, "prescriptions_million": 2.3, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 110.0, "prescriptions_million": 2.1, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 11,
+    "drug_name": "Salbutamol",
+    "therapeutic_area": "Respiratory",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 90.0, "prescriptions_million": 3.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 87.0, "prescriptions_million": 2.9, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 85.0, "prescriptions_million": 2.8, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 82.0, "prescriptions_million": 2.7, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 80.0, "prescriptions_million": 2.6, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 12,
+    "drug_name": "Budesonide",
+    "therapeutic_area": "Respiratory",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 70.0, "prescriptions_million": 1.8, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 68.0, "prescriptions_million": 1.7, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 65.0, "prescriptions_million": 1.6, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 63.0, "prescriptions_million": 1.5, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 60.0, "prescriptions_million": 1.4, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 13,
+    "drug_name": "Montelukast",
+    "therapeutic_area": "Respiratory",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 50.0, "prescriptions_million": 1.2, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 48.0, "prescriptions_million": 1.1, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 46.0, "prescriptions_million": 1.0, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 44.0, "prescriptions_million": 0.95, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 42.0, "prescriptions_million": 0.9, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 14,
+    "drug_name": "Tiotropium",
+    "therapeutic_area": "Respiratory",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 95.0, "prescriptions_million": 2.1, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 92.0, "prescriptions_million": 2.0, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 90.0, "prescriptions_million": 1.9, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 88.0, "prescriptions_million": 1.8, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 85.0, "prescriptions_million": 1.7, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 15,
+    "drug_name": "Formoterol",
+    "therapeutic_area": "Respiratory",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 60.0, "prescriptions_million": 1.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 58.0, "prescriptions_million": 1.45, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 55.0, "prescriptions_million": 1.4, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 53.0, "prescriptions_million": 1.35, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 50.0, "prescriptions_million": 1.3, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 16,
+    "drug_name": "Sertraline",
+    "therapeutic_area": "CNS/Mental Health",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 75.0, "prescriptions_million": 1.9, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 72.0, "prescriptions_million": 1.85, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 70.0, "prescriptions_million": 1.8, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 68.0, "prescriptions_million": 1.75, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 65.0, "prescriptions_million": 1.7, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 17,
+    "drug_name": "Escitalopram",
+    "therapeutic_area": "CNS/Mental Health",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 60.0, "prescriptions_million": 1.6, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 58.0, "prescriptions_million": 1.55, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 56.0, "prescriptions_million": 1.5, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 54.0, "prescriptions_million": 1.45, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 52.0, "prescriptions_million": 1.4, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 18,
+    "drug_name": "Risperidone",
+    "therapeutic_area": "CNS/Mental Health",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 85.0, "prescriptions_million": 2.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 82.0, "prescriptions_million": 1.95, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 80.0, "prescriptions_million": 1.9, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 78.0, "prescriptions_million": 1.85, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 75.0, "prescriptions_million": 1.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 19,
+    "drug_name": "Donepezil",
+    "therapeutic_area": "CNS/Mental Health",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 65.0, "prescriptions_million": 1.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 63.0, "prescriptions_million": 1.45, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 61.0, "prescriptions_million": 1.4, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 59.0, "prescriptions_million": 1.35, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 57.0, "prescriptions_million": 1.3, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 20,
+    "drug_name": "Gabapentin",
+    "therapeutic_area": "CNS/Mental Health",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 75.0, "prescriptions_million": 2.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 72.0, "prescriptions_million": 1.95, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 70.0, "prescriptions_million": 1.9, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 68.0, "prescriptions_million": 1.85, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 65.0, "prescriptions_million": 1.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 21,
+    "drug_name": "Imatinib",
+    "therapeutic_area": "Oncology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 200.0, "prescriptions_million": 0.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 195.0, "prescriptions_million": 0.48, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 190.0, "prescriptions_million": 0.46, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 185.0, "prescriptions_million": 0.44, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 180.0, "prescriptions_million": 0.42, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 22,
+    "drug_name": "Tamoxifen",
+    "therapeutic_area": "Oncology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 120.0, "prescriptions_million": 1.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 115.0, "prescriptions_million": 0.98, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 110.0, "prescriptions_million": 0.95, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 105.0, "prescriptions_million": 0.92, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 100.0, "prescriptions_million": 0.9, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 23,
+    "drug_name": "Capecitabine",
+    "therapeutic_area": "Oncology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 140.0, "prescriptions_million": 0.6, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 135.0, "prescriptions_million": 0.58, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 130.0, "prescriptions_million": 0.56, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 125.0, "prescriptions_million": 0.54, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 120.0, "prescriptions_million": 0.52, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 24,
+    "drug_name": "Paclitaxel",
+    "therapeutic_area": "Oncology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 180.0, "prescriptions_million": 0.4, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 175.0, "prescriptions_million": 0.38, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 170.0, "prescriptions_million": 0.36, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 165.0, "prescriptions_million": 0.34, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 160.0, "prescriptions_million": 0.32, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 25,
+    "drug_name": "Carboplatin",
+    "therapeutic_area": "Oncology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 130.0, "prescriptions_million": 0.3, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 127.0, "prescriptions_million": 0.28, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 124.0, "prescriptions_million": 0.26, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 121.0, "prescriptions_million": 0.24, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 118.0, "prescriptions_million": 0.22, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 26,
+    "drug_name": "Amoxicillin",
+    "therapeutic_area": "Infectious Disease",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 160.0, "prescriptions_million": 4.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 155.0, "prescriptions_million": 4.4, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 150.0, "prescriptions_million": 4.3, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 145.0, "prescriptions_million": 4.2, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 140.0, "prescriptions_million": 4.1, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 27,
+    "drug_name": "Azithromycin",
+    "therapeutic_area": "Infectious Disease",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 145.0, "prescriptions_million": 3.8, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 140.0, "prescriptions_million": 3.7, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 135.0, "prescriptions_million": 3.6, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 130.0, "prescriptions_million": 3.5, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 125.0, "prescriptions_million": 3.4, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 28,
+    "drug_name": "Ciprofloxacin",
+    "therapeutic_area": "Infectious Disease",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 150.0, "prescriptions_million": 3.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 145.0, "prescriptions_million": 3.45, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 140.0, "prescriptions_million": 3.4, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 135.0, "prescriptions_million": 3.35, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 130.0, "prescriptions_million": 3.3, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 29,
+    "drug_name": "Oseltamivir",
+    "therapeutic_area": "Infectious Disease",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 95.0, "prescriptions_million": 1.2, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 92.0, "prescriptions_million": 1.18, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 90.0, "prescriptions_million": 1.15, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 88.0, "prescriptions_million": 1.12, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 85.0, "prescriptions_million": 1.1, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 30,
+    "drug_name": "Acyclovir",
+    "therapeutic_area": "Infectious Disease",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 80.0, "prescriptions_million": 1.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 77.0, "prescriptions_million": 1.45, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 75.0, "prescriptions_million": 1.4, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 72.0, "prescriptions_million": 1.35, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 70.0, "prescriptions_million": 1.3, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 31,
+    "drug_name": "Omeprazole",
+    "therapeutic_area": "Gastroenterology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 110.0, "prescriptions_million": 2.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 107.0, "prescriptions_million": 2.45, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 105.0, "prescriptions_million": 2.4, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 102.0, "prescriptions_million": 2.35, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 100.0, "prescriptions_million": 2.3, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 32,
+    "drug_name": "Pantoprazole",
+    "therapeutic_area": "Gastroenterology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 90.0, "prescriptions_million": 2.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 87.0, "prescriptions_million": 1.95, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 85.0, "prescriptions_million": 1.9, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 82.0, "prescriptions_million": 1.85, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 80.0, "prescriptions_million": 1.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 33,
+    "drug_name": "Ondansetron",
+    "therapeutic_area": "Gastroenterology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 70.0, "prescriptions_million": 1.1, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 68.0, "prescriptions_million": 1.05, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 66.0, "prescriptions_million": 1.0, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 64.0, "prescriptions_million": 0.95, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 62.0, "prescriptions_million": 0.9, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 34,
+    "drug_name": "Loperamide",
+    "therapeutic_area": "Gastroenterology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 60.0, "prescriptions_million": 1.3, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 58.0, "prescriptions_million": 1.25, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 56.0, "prescriptions_million": 1.2, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 54.0, "prescriptions_million": 1.15, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 52.0, "prescriptions_million": 1.1, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 35,
+    "drug_name": "Mesalamine",
+    "therapeutic_area": "Gastroenterology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 55.0, "prescriptions_million": 0.9, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 53.0, "prescriptions_million": 0.88, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 51.0, "prescriptions_million": 0.85, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 49.0, "prescriptions_million": 0.82, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 47.0, "prescriptions_million": 0.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 36,
+    "drug_name": "Ibuprofen",
+    "therapeutic_area": "Pain/Inflammation",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 140.0, "prescriptions_million": 5.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 135.0, "prescriptions_million": 4.9, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 130.0, "prescriptions_million": 4.8, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 125.0, "prescriptions_million": 4.7, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 120.0, "prescriptions_million": 4.6, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 37,
+    "drug_name": "Diclofenac",
+    "therapeutic_area": "Pain/Inflammation",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 120.0, "prescriptions_million": 3.8, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 115.0, "prescriptions_million": 3.7, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 110.0, "prescriptions_million": 3.6, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 105.0, "prescriptions_million": 3.5, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 100.0, "prescriptions_million": 3.4, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 38,
+    "drug_name": "Celecoxib",
+    "therapeutic_area": "Pain/Inflammation",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 75.0, "prescriptions_million": 1.8, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 72.0, "prescriptions_million": 1.75, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 70.0, "prescriptions_million": 1.7, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 68.0, "prescriptions_million": 1.65, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 65.0, "prescriptions_million": 1.6, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 39,
+    "drug_name": "Tramadol",
+    "therapeutic_area": "Pain/Inflammation",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 85.0, "prescriptions_million": 2.2, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 82.0, "prescriptions_million": 2.15, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 80.0, "prescriptions_million": 2.1, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 78.0, "prescriptions_million": 2.05, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 75.0, "prescriptions_million": 2.0, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 40,
+    "drug_name": "Acetaminophen",
+    "therapeutic_area": "Pain/Inflammation",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 100.0, "prescriptions_million": 4.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 97.0, "prescriptions_million": 4.4, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 95.0, "prescriptions_million": 4.35, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 92.0, "prescriptions_million": 4.3, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 90.0, "prescriptions_million": 4.25, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 41,
+    "drug_name": "Adalimumab",
+    "therapeutic_area": "Immunology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 350.0, "prescriptions_million": 1.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 340.0, "prescriptions_million": 0.95, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 330.0, "prescriptions_million": 0.9, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 320.0, "prescriptions_million": 0.85, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 310.0, "prescriptions_million": 0.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 42,
+    "drug_name": "Methotrexate",
+    "therapeutic_area": "Immunology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 90.0, "prescriptions_million": 2.0, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 88.0, "prescriptions_million": 1.95, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 85.0, "prescriptions_million": 1.9, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 82.0, "prescriptions_million": 1.85, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 80.0, "prescriptions_million": 1.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 43,
+    "drug_name": "Hydroxychloroquine",
+    "therapeutic_area": "Immunology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 45.0, "prescriptions_million": 0.9, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 44.0, "prescriptions_million": 0.88, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 43.0, "prescriptions_million": 0.85, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 42.0, "prescriptions_million": 0.82, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 40.0, "prescriptions_million": 0.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 44,
+    "drug_name": "Azathioprine",
+    "therapeutic_area": "Immunology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 50.0, "prescriptions_million": 1.1, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 48.0, "prescriptions_million": 1.05, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 46.0, "prescriptions_million": 1.0, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 45.0, "prescriptions_million": 0.95, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 43.0, "prescriptions_million": 0.9, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 45,
+    "drug_name": "Prednisone",
+    "therapeutic_area": "Immunology",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 60.0, "prescriptions_million": 1.5, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 58.0, "prescriptions_million": 1.45, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 56.0, "prescriptions_million": 1.4, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 54.0, "prescriptions_million": 1.35, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 52.0, "prescriptions_million": 1.3, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 46,
+    "drug_name": "Levothyroxine",
+    "therapeutic_area": "Endocrine",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 120.0, "prescriptions_million": 3.2, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 117.0, "prescriptions_million": 3.1, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 115.0, "prescriptions_million": 3.05, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 112.0, "prescriptions_million": 3.0, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 110.0, "prescriptions_million": 2.95, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 47,
+    "drug_name": "Alendronate",
+    "therapeutic_area": "Endocrine",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 50.0, "prescriptions_million": 1.2, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 48.0, "prescriptions_million": 1.15, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 46.0, "prescriptions_million": 1.1, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 44.0, "prescriptions_million": 1.05, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 42.0, "prescriptions_million": 1.0, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 48,
+    "drug_name": "Testosterone",
+    "therapeutic_area": "Endocrine",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 80.0, "prescriptions_million": 0.9, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 78.0, "prescriptions_million": 0.88, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 75.0, "prescriptions_million": 0.85, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 73.0, "prescriptions_million": 0.82, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 70.0, "prescriptions_million": 0.8, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 49,
+    "drug_name": "Estradiol",
+    "therapeutic_area": "Endocrine",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 75.0, "prescriptions_million": 1.2, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 70.0, "prescriptions_million": 1.15, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 68.0, "prescriptions_million": 1.1, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 65.0, "prescriptions_million": 1.05, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 63.0, "prescriptions_million": 1.0, "market_trend": "decreasing"}
+    ]
+  },
+  {
+    "drug_id": 50,
+    "drug_name": "Cabergoline",
+    "therapeutic_area": "Endocrine",
+    "data_points": [
+      {"year": 2024, "sales_usd_million": 40.0, "prescriptions_million": 0.6, "market_trend": "increasing"},
+      {"year": 2023, "sales_usd_million": 38.0, "prescriptions_million": 0.58, "market_trend": "stable"},
+      {"year": 2022, "sales_usd_million": 36.0, "prescriptions_million": 0.55, "market_trend": "stable"},
+      {"year": 2021, "sales_usd_million": 35.0, "prescriptions_million": 0.52, "market_trend": "stable"},
+      {"year": 2020, "sales_usd_million": 33.0, "prescriptions_million": 0.5, "market_trend": "decreasing"}
+    ]
+  }
+]
+}
+
