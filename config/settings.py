@@ -1,8 +1,7 @@
-#settings.py
+# settings.py
 """
 Configuration settings for Pharma Agentic AI System
 """
-import os
 from pathlib import Path
 
 # Base directories
@@ -19,32 +18,32 @@ INTERNAL_DOCS_DIR.mkdir(exist_ok=True)
 OLLAMA_CONFIG = {
     "base_url": "http://localhost:11434",
     "model": "llama3.1:8b",
-    "temperature": 0.7,
-    "max_tokens": 2000,
+    "temperature": 0.5,
+    "max_tokens": 3000,
+    "num_predict": 3000,
 }
 
 # Data file paths
 DATA_FILES = {
     "drugs_database": DATA_DIR / "drugs_database.json",
     "mock_iqvia": DATA_DIR / "mock_iqvia.json",
-    "mock_exim": DATA_DIR / "mock_exim.json",
 }
 
 # API Endpoints (Free sources)
 API_ENDPOINTS = {
     # Clinical Trials
     "clinical_trials": "https://clinicaltrials.gov/api/v2/studies",
-    
-    # Patents - USPTO
-    "uspto_patents": "https://developer.uspto.gov/ibd-api/v1/application/grants",
-    
+    # Patents - USPTO PatentsView
+    "uspto_patents": "mock",
     # PubMed for scientific literature
     "pubmed_search": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
     "pubmed_fetch": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi",
-    
     # FDA OpenFDA
     "openfda_drugs": "https://api.fda.gov/drug/event.json",
     "openfda_labels": "https://api.fda.gov/drug/label.json",
+    # Trade Data APIs
+    "un_comtrade": "https://comtradeapi.un.org/public/v1/getDA",
+    "world_bank_trade": "https://api.worldbank.org/v2",
 }
 
 # Agent Configuration
@@ -134,7 +133,7 @@ TEST_QUERIES = [
     "What are the export-import trends for SGLT2 inhibitors and their market dynamics?",
     "Find CNS drugs with expiring patents that show potential for pediatric formulations",
     "Analyze the competitive landscape for proton pump inhibitors with novel delivery mechanisms",
-    "Which immunology drugs have successful off-label use documented in clinical literature?"
+    "Which immunology drugs have successful off-label use documented in clinical literature?",
 ]
 
 # Cache settings
@@ -153,13 +152,13 @@ RATE_LIMIT = {
 
 # Export settings
 __all__ = [
-    'BASE_DIR',
-    'DATA_DIR', 
-    'REPORTS_DIR',
-    'OLLAMA_CONFIG',
-    'API_ENDPOINTS',
-    'AGENT_CONFIG',
-    'REPORT_CONFIG',
-    'UI_CONFIG',
-    'TEST_QUERIES',
+    "BASE_DIR",
+    "DATA_DIR",
+    "REPORTS_DIR",
+    "OLLAMA_CONFIG",
+    "API_ENDPOINTS",
+    "AGENT_CONFIG",
+    "REPORT_CONFIG",
+    "UI_CONFIG",
+    "TEST_QUERIES",
 ]
