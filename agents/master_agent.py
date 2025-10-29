@@ -1119,14 +1119,7 @@ Example:
             enriched_params["drugs"] = list(expanded_drugs)
 
         elif agent_name == "iqvia":
-            enriched_params["drug_context"] = {}
-            for drug in params.get("drugs", []):
-                drug_info = enriched_data.get(drug)
-                if drug_info:
-                    enriched_params["drug_context"][drug] = {
-                        "drug_class": drug_info.get("drug_class"),
-                        "therapeutic_area": drug_info.get("therapeutic_area"),
-                    }
+            pass
 
         elif agent_name == "web_intelligence":
             original_keywords = params.get("keywords", [])
