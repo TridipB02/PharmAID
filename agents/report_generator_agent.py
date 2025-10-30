@@ -815,27 +815,36 @@ class ProfessionalReportGenerator:
             elements.append(Paragraph(f"<b>Trial Details ({len(trials)} trials):</b>", styles['CustomHeading3']))
             elements.append(Spacer(1, 0.1*inch))
             
-            # Create comprehensive table data
-            table_data = [['Trial ID', 'Title', 'Phase', 'Status', 'Sponsor', 'Timeline']]
+            # Create comprehensive table data with Paragraph objects for wrapping
+            table_data = [[
+                Paragraph('<b>Trial ID</b>', styles['CustomBodyText']),
+                Paragraph('<b>Title</b>', styles['CustomBodyText']),
+                Paragraph('<b>Phase</b>', styles['CustomBodyText']),
+                Paragraph('<b>Status</b>', styles['CustomBodyText']),
+                Paragraph('<b>Sponsor</b>', styles['CustomBodyText']),
+                Paragraph('<b>Timeline</b>', styles['CustomBodyText'])
+            ]]
             
             for trial in trials:
                 title = trial.get('title', 'N/A')
-                if len(title) > 80:
-                    title = title[:77] + "..."
+                # Don't truncate - let it wrap
                 
                 timeline = f"{trial.get('start_date', 'N/A')[:7]} to {trial.get('completion_date', 'N/A')[:7]}"
                 
+                sponsor = trial.get('sponsor', 'N/A')
+                # Don't truncate sponsor either
+                
                 table_data.append([
-                    trial.get('nct_id', 'N/A'),
-                    title,
-                    trial.get('phase', 'N/A'),
-                    trial.get('status', 'N/A'),
-                    trial.get('sponsor', 'N/A')[:30] + "..." if len(trial.get('sponsor', '')) > 30 else trial.get('sponsor', 'N/A'),
-                    timeline
+                    Paragraph(trial.get('nct_id', 'N/A'), styles['CustomBodyText']),
+                    Paragraph(title, styles['CustomBodyText']),
+                    Paragraph(trial.get('phase', 'N/A'), styles['CustomBodyText']),
+                    Paragraph(trial.get('status', 'N/A'), styles['CustomBodyText']),
+                    Paragraph(sponsor, styles['CustomBodyText']),
+                    Paragraph(timeline, styles['CustomBodyText'])
                 ])
             
-            # Create wide table
-            trials_table = Table(table_data, colWidths=[0.8*inch, 2.2*inch, 0.7*inch, 0.9*inch, 1.5*inch, 0.9*inch])
+            # Create wide table with proper wrapping
+            trials_table = Table(table_data, colWidths=[0.8*inch, 2.5*inch, 0.7*inch, 0.9*inch, 1.3*inch, 0.8*inch])
             trials_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#1f77b4")),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -843,8 +852,10 @@ class ProfessionalReportGenerator:
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
                 ('FONTSIZE', (0, 0), (-1, -1), 8),
-                ('TOPPADDING', (0, 0), (-1, -1), 4),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                ('TOPPADDING', (0, 0), (-1, -1), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                ('LEFTPADDING', (0, 0), (-1, -1), 3),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 3),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
                 ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#f0f8ff")]),
@@ -858,24 +869,23 @@ class ProfessionalReportGenerator:
                 elements.append(Paragraph("<b>Trial Interventions & Conditions:</b>", styles['CustomHeading3']))
                 elements.append(Spacer(1, 0.05*inch))
                 
-                detail_data = [['Trial ID', 'Interventions', 'Conditions']]
+                detail_data = [[
+                    Paragraph('<b>Trial ID</b>', styles['CustomBodyText']),
+                    Paragraph('<b>Interventions</b>', styles['CustomBodyText']),
+                    Paragraph('<b>Conditions</b>', styles['CustomBodyText'])
+                ]]
                 
                 for trial in trials[:10]:  # Show details for top 10
                     interventions = ', '.join(trial.get('interventions', [])[:3])
-                    if len(interventions) > 60:
-                        interventions = interventions[:57] + "..."
-                    
                     conditions = ', '.join(trial.get('conditions', [])[:3])
-                    if len(conditions) > 60:
-                        conditions = conditions[:57] + "..."
                     
                     detail_data.append([
-                        trial.get('nct_id', 'N/A'),
-                        interventions if interventions else 'N/A',
-                        conditions if conditions else 'N/A'
+                        Paragraph(trial.get('nct_id', 'N/A'), styles['CustomBodyText']),
+                        Paragraph(interventions if interventions else 'N/A', styles['CustomBodyText']),
+                        Paragraph(conditions if conditions else 'N/A', styles['CustomBodyText'])
                     ])
                 
-                detail_table = Table(detail_data, colWidths=[0.8*inch, 3*inch, 3*inch])
+                detail_table = Table(detail_data, colWidths=[0.8*inch, 3*inch, 2.4*inch])
                 detail_table.setStyle(TableStyle([
                     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#2ca02c")),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -883,8 +893,10 @@ class ProfessionalReportGenerator:
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                     ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
                     ('FONTSIZE', (0, 0), (-1, -1), 8),
-                    ('TOPPADDING', (0, 0), (-1, -1), 4),
-                    ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                    ('TOPPADDING', (0, 0), (-1, -1), 5),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 3),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 3),
                     ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
                     ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                     ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#e8f4f8")]),
@@ -951,33 +963,35 @@ class ProfessionalReportGenerator:
         elements.append(Paragraph(patent_summary, styles['CustomBodyText']))
         elements.append(Spacer(1, 0.15*inch))
         
-        # Patent details table
+        # Patent details table with text wrapping
         detailed_patents = data.get("detailed_patents", [])
         if detailed_patents:
             elements.append(Paragraph(f"<b>Patent Portfolio ({len(detailed_patents)} patents):</b>", styles['CustomHeading3']))
             elements.append(Spacer(1, 0.1*inch))
             
-            table_data = [['Patent #', 'Title', 'Assignee', 'Grant Date', 'Expiry Date', 'Status']]
+            table_data = [[
+                Paragraph('<b>Patent #</b>', styles['CustomBodyText']),
+                Paragraph('<b>Title</b>', styles['CustomBodyText']),
+                Paragraph('<b>Assignee</b>', styles['CustomBodyText']),
+                Paragraph('<b>Grant</b>', styles['CustomBodyText']),
+                Paragraph('<b>Expiry</b>', styles['CustomBodyText']),
+                Paragraph('<b>Status</b>', styles['CustomBodyText'])
+            ]]
             
             for patent in detailed_patents[:15]:  # Show top 15
                 title = patent.get('title', 'N/A')
-                if len(title) > 50:
-                    title = title[:47] + "..."
-                
                 assignee = patent.get('assignee', 'N/A')
-                if len(assignee) > 25:
-                    assignee = assignee[:22] + "..."
                 
                 table_data.append([
-                    patent.get('patent_number', 'N/A'),
-                    title,
-                    assignee,
-                    patent.get('grant_date', 'N/A')[:10],
-                    patent.get('expiry_date', 'N/A')[:10],
-                    patent.get('status', 'N/A')
+                    Paragraph(patent.get('patent_number', 'N/A'), styles['CustomBodyText']),
+                    Paragraph(title, styles['CustomBodyText']),
+                    Paragraph(assignee, styles['CustomBodyText']),
+                    Paragraph(patent.get('grant_date', 'N/A')[:10], styles['CustomBodyText']),
+                    Paragraph(patent.get('expiry_date', 'N/A')[:10], styles['CustomBodyText']),
+                    Paragraph(patent.get('status', 'N/A'), styles['CustomBodyText'])
                 ])
             
-            patent_table = Table(table_data, colWidths=[0.9*inch, 2*inch, 1.3*inch, 0.9*inch, 0.9*inch, 0.8*inch])
+            patent_table = Table(table_data, colWidths=[0.9*inch, 2.2*inch, 1.3*inch, 0.7*inch, 0.7*inch, 0.7*inch])
             patent_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#d62728")),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -985,8 +999,10 @@ class ProfessionalReportGenerator:
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
                 ('FONTSIZE', (0, 0), (-1, -1), 8),
-                ('TOPPADDING', (0, 0), (-1, -1), 4),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                ('TOPPADDING', (0, 0), (-1, -1), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                ('LEFTPADDING', (0, 0), (-1, -1), 3),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 3),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
                 ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#ffe6e6")]),
