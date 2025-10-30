@@ -130,11 +130,7 @@ def render_header():
         '<h1 class="main-header">💊 Pharma Agentic AI</h1>', unsafe_allow_html=True
     )
     st.markdown(
-        '<p style="text-align: center; color: #666; font-size: 1.1rem;">Portfolio Planning Assistant - Drug Repurposing Intelligence</p>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<p style="text-align: center; color: #999; font-size: 0.9rem;">✨ Now with Professional PDF Reports & Visual Analytics</p>',
+        '<p style="text-align: center; color: #666; font-size: 1.1rem;">Pharmaceutical Intelligence Platform</p>',
         unsafe_allow_html=True,
     )
     st.markdown("---")
@@ -143,29 +139,7 @@ def render_header():
 # Sidebar
 def render_sidebar():
     """Render the sidebar with options"""
-    st.sidebar.title("🔧 Configuration")
-
-    # Database stats
-    st.sidebar.subheader("📊 Database Info")
-    mock_fetcher = st.session_state.mock_fetcher
-
-    if hasattr(mock_fetcher, "drugs_db") and "drugs" in mock_fetcher.drugs_db:
-        drug_count = len(mock_fetcher.drugs_db["drugs"])
-        st.sidebar.info(f"**Total Drugs:** {drug_count}")
-
-        # Count by therapeutic area
-        therapeutic_areas = {}
-        for drug in mock_fetcher.drugs_db["drugs"]:
-            area = drug.get("therapeutic_area", "Unknown")
-            therapeutic_areas[area] = therapeutic_areas.get(area, 0) + 1
-
-        st.sidebar.write("**By Therapeutic Area:**")
-        for area, count in sorted(therapeutic_areas.items()):
-            st.sidebar.write(f"- {area}: {count}")
-    else:
-        st.sidebar.warning("Drug database not loaded")
-
-    st.sidebar.markdown("---")
+    st.sidebar.title("⚙️ Settings")
 
     # Sample queries
     st.sidebar.subheader("📝 Sample Queries")
@@ -195,8 +169,7 @@ def render_sidebar():
     # System status
     st.sidebar.subheader("🚀 System Status")
     st.sidebar.success("✅ Ollama Connected")
-    st.sidebar.success("✅ Mock Data Loaded")
-    st.sidebar.success("✅ Professional PDF Ready")
+    st.sidebar.success("✅ APIs Ready")
     st.sidebar.info(f"Model: llama3.1:8b")
 
 
@@ -261,54 +234,22 @@ def process_query(user_query: str):
 def render_response():
     """Render the response from the agent with enhanced visualizations"""
     if st.session_state.current_response is None:
-        st.info("👆 Enter a query above to get started!")
-
-        # Show helpful information
-        st.markdown("### 💡 What can I help you with?")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.markdown(
-                """
-            **Market Analysis:**
-            - Sales trends and CAGR
-            - Competitive landscape
-            - Prescription volumes
-            - Market opportunities
-            """
-            )
-
-            st.markdown(
-                """
-            **Clinical Intelligence:**
-            - Ongoing clinical trials
-            - Trial phase distribution
-            - Sponsor information
-            - Pipeline analysis
-            """
-            )
-
-        with col2:
-            st.markdown(
-                """
-            **Patent Intelligence:**
-            - Patent expiry timelines
-            - Freedom-to-operate analysis
-            - Competitive filings
-            - IP opportunities
-            """
-            )
-
-            st.markdown(
-                """
-            **Trade Analysis:**
-            - Import/export trends
-            - Sourcing patterns
-            - Price dynamics
-            - Global trade insights
-            """
-            )
+        # Show helpful information card
+        st.markdown("### 🎯 Pharmaceutical Intelligence Capabilities")
+        
+        st.info("""
+        **Ask questions about:**
+        
+        🔹 **Market Dynamics** - Sales trends, CAGR analysis, competitive positioning, market opportunities
+        
+        🔹 **Clinical Development** - Pipeline analysis, trial phases, sponsor insights, repurposing opportunities
+        
+        🔹 **Patent Landscape** - IP protection, expiry timelines, FTO analysis, competitive filings
+        
+        🔹 **Global Trade** - Import/export patterns, sourcing strategies, trade dynamics, supply chain insights
+        
+        🔹 **Scientific Evidence** - Literature analysis, treatment guidelines, research trends
+        """)
 
         return
 
@@ -601,13 +542,13 @@ def render_exim_charts(data: Dict):
 
 
 def generate_professional_pdf_report(response: Dict):
-    """Generate PROFESSIONAL PDF report with enhanced charts - UPDATED FUNCTION"""
-    with st.spinner("🎨 Generating professional PDF report with visualizations..."):
+    """Generate PROFESSIONAL PDF report with enhanced charts - CLEAN VERSION"""
+    with st.spinner("🎨 Generating professional PDF report..."):
         try:
             # Import the ENHANCED report generator
             from agents.report_generator_agent import get_report_generator_agent
             
-            # Initialize with verbose=False for cleaner UI
+            # Initialize with verbose=FALSE for clean UI
             report_agent = get_report_generator_agent(verbose=False)
             
             # Generate the professional report
@@ -623,34 +564,10 @@ def generate_professional_pdf_report(response: Dict):
                 with open(result["filepath"], "rb") as f:
                     pdf_data = f.read()
                 
-                # Show success message with styling
-                st.markdown(
-                    '<div class="success-banner">✅ Professional PDF Report Generated Successfully!</div>',
-                    unsafe_allow_html=True
-                )
+                # Show simple success message
+                st.success("✅ PDF Report Generated Successfully!")
                 
-                # Display metrics in styled cards
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    st.metric("📦 File Size", f"{result['size_mb']} MB")
-                with col2:
-                    st.metric("⏱️ Generation Time", f"{result['generation_time']:.1f}s")
-                with col3:
-                    st.metric("📄 Format", "Professional PDF")
-                
-                # Download section with styling
-                st.markdown('<div class="download-section">', unsafe_allow_html=True)
-                st.markdown("### 📥 Download Your Report")
-                st.markdown("""
-                **Your report includes:**
-                - 📑 Professional cover page with metadata
-                - 📊 Executive summary with key insights
-                - 📈 Embedded charts and visualizations
-                - 📋 Detailed analysis by intelligence source
-                - 📚 Methodology appendix
-                """)
-                
-                # Download button
+                # Download button only
                 st.download_button(
                     label="📥 Download Professional PDF Report",
                     data=pdf_data,
@@ -658,13 +575,13 @@ def generate_professional_pdf_report(response: Dict):
                     mime="application/pdf",
                     use_container_width=True,
                 )
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                st.info("💡 **Tip:** This PDF is publication-ready with professional formatting and embedded visualizations!")
                 
             else:
                 st.error(f"❌ Error generating report: {result.get('error', 'Unknown error')}")
-                st.warning("💡 **Troubleshooting:** Check that reportlab and matplotlib are installed")
+                
+                # Show detailed error info in expander
+                with st.expander("🔍 Detailed Error Information"):
+                    st.json(result)
                 
                 with st.expander("🔧 Installation Instructions"):
                     st.code("""
@@ -675,8 +592,10 @@ pip install -r requirements.txt
                     """, language="bash")
         
         except Exception as e:
-            st.error(f"❌ Error: {str(e)}")
-            st.exception(e)
+            st.error(f"❌ Error generating report: {str(e)}")
+            with st.expander("📋 Full Error Traceback"):
+                import traceback
+                st.code(traceback.format_exc())
 
 
 def generate_excel_report(response: Dict):
@@ -737,16 +656,10 @@ def main():
     render_response()
     render_query_history()
 
-    # Enhanced Footer
+    # Minimal Footer
     st.markdown("---")
     st.markdown(
-        """
-        <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
-            <h3>Pharma Agentic AI v2.0 - Professional Edition</h3>
-            <p>✨ Enhanced Visualizations | 📄 Professional PDF Reports | 🚀 Powered by Ollama & CrewAI</p>
-            <p style="font-size: 0.9rem;">Last Updated: {}</p>
-        </div>
-        """.format(datetime.now().strftime("%Y-%m-%d")),
+        '<p style="text-align: center; color: #999; font-size: 0.85rem;">Pharma Agentic AI | Powered by Ollama & CrewAI</p>',
         unsafe_allow_html=True,
     )
 
