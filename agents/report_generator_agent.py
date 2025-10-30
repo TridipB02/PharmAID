@@ -1,10 +1,11 @@
 """
-Report Generator Agent - Documentation and Reporting Expert
-Generates comprehensive PDF/Excel reports with visualizations
+Enhanced Report Generator Agent - Professional PDF with Charts
+STANDALONE VERSION - Copy this ENTIRE file to agents/report_generator_agent.py
 """
 
 import json
 import sys
+import io
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -22,78 +23,81 @@ try:
     from reportlab.lib.pagesizes import letter
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
     from reportlab.lib.units import inch
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
     from reportlab.platypus import (
-        PageBreak,
-        Paragraph,
-        SimpleDocTemplate,
-        Spacer,
-        Table,
-        TableStyle,
+        PageBreak, Paragraph, SimpleDocTemplate, Spacer, 
+        Table, TableStyle, Image, HRFlowable
     )
-
     REPORTLAB_AVAILABLE = True
-except ImportError:
+    print("✓ ReportLab imported successfully")
+except ImportError as e:
     REPORTLAB_AVAILABLE = False
-    print("⚠ reportlab not available - PDF generation will be limited")
+    print(f"✗ ReportLab import failed: {e}")
+
+try:
+    import matplotlib
+    matplotlib.use('Agg')  # Non-interactive backend
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    MATPLOTLIB_AVAILABLE = True
+    print("✓ Matplotlib imported successfully")
+except ImportError as e:
+    MATPLOTLIB_AVAILABLE = False
+    print(f"✗ Matplotlib import failed: {e}")
 
 
-class ReportGeneratorAgent:
-    """
-    Report Generator Agent
-
-    Responsibilities:
-    - Generate PDF reports with formatted text and tables
-    - Create Excel data exports
-    - Add charts and visualizations
-    - Format agent responses into downloadable documents
-    - Maintain report archive
-    """
+class ProfessionalReportGenerator:
+    """Enhanced Report Generator with Professional Formatting and Charts"""
 
     def __init__(self, verbose: bool = True):
-        """
-        Initialize Report Generator Agent
-
-        Args:
-            verbose: Whether to print detailed logs
-        """
         self.verbose = verbose
+        
+        # Ensure reports directory exists
         self.reports_directory = REPORTS_DIR
-
-        # Ensure directory exists
-        self.reports_directory.mkdir(exist_ok=True, parents=True)
-
+        try:
+            self.reports_directory.mkdir(exist_ok=True, parents=True)
+            if self.verbose:
+                print(f"✓ Reports directory: {self.reports_directory}")
+                print(f"  Exists: {self.reports_directory.exists()}")
+                print(f"  Writable: {self.reports_directory.is_dir()}")
+        except Exception as e:
+            print(f"✗ Error with reports directory: {e}")
+            # Fallback
+            self.reports_directory = Path("./reports")
+            self.reports_directory.mkdir(exist_ok=True, parents=True)
+        
+        # Set matplotlib styling
+        if MATPLOTLIB_AVAILABLE:
+            try:
+                sns.set_style("whitegrid")
+                plt.rcParams['font.family'] = 'sans-serif'
+                plt.rcParams['font.sans-serif'] = ['Arial', 'Helvetica']
+            except:
+                pass
+        
         if self.verbose:
-            print("✓ Report Generator Agent initialized")
-            print(f"  Reports directory: {self.reports_directory}")
+            print(f"✓ Report Generator initialized")
+            print(f"  ReportLab: {REPORTLAB_AVAILABLE}")
+            print(f"  Matplotlib: {MATPLOTLIB_AVAILABLE}")
 
     def generate_report(
         self,
         query: str,
         agent_responses: List[Dict[str, Any]],
         synthesized_response: str,
-        report_format: str = "pdf",  # "pdf" or "excel"
+        report_format: str = "pdf",
     ) -> Dict[str, Any]:
-        """
-        Generate a comprehensive report from agent responses
-
-        Args:
-            query: Original user query
-            agent_responses: List of responses from worker agents
-            synthesized_response: Final synthesized response text
-            report_format: Format to generate ("pdf" or "excel")
-
-        Returns:
-            Dictionary with report generation results
-        """
+        """Generate professional report"""
+        
         if self.verbose:
-            print(
-                f"\n[Report Generator Agent] Generating {report_format.upper()} report..."
-            )
+            print(f"\n{'='*60}")
+            print(f"GENERATING {report_format.upper()} REPORT")
+            print(f"{'='*60}")
 
-        # Generate timestamp-based filename
+        # Generate filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_query = "".join(c if c.isalnum() else "_" for c in query[:30])
-        filename = f"report_{safe_query}_{timestamp}.{report_format}"
+        filename = f"pharma_report_{safe_query}_{timestamp}.{report_format}"
         filepath = self.reports_directory / filename
 
         result = {
@@ -103,17 +107,18 @@ class ReportGeneratorAgent:
             "filepath": str(filepath),
             "size_bytes": 0,
             "generation_time": None,
+            "error": None
         }
 
         try:
             start_time = datetime.now()
 
             if report_format == "pdf":
-                success = self._generate_pdf_report(
+                success = self._generate_pdf(
                     filepath, query, agent_responses, synthesized_response
                 )
             elif report_format == "excel":
-                success = self._generate_excel_report(
+                success = self._generate_excel(
                     filepath, query, agent_responses, synthesized_response
                 )
             else:
@@ -123,9 +128,7 @@ class ReportGeneratorAgent:
                 result["success"] = True
                 result["size_bytes"] = filepath.stat().st_size
                 result["size_mb"] = round(result["size_bytes"] / (1024 * 1024), 3)
-                result["generation_time"] = (
-                    datetime.now() - start_time
-                ).total_seconds()
+                result["generation_time"] = (datetime.now() - start_time).total_seconds()
 
                 if self.verbose:
                     print(f"✓ Report generated: {filename}")
@@ -133,530 +136,1036 @@ class ReportGeneratorAgent:
                     print(f"  Time: {result['generation_time']:.2f}s")
             else:
                 result["error"] = "Report file was not created"
+                if self.verbose:
+                    print(f"✗ File not created: {filepath}")
+                    print(f"  Exists: {filepath.exists()}")
 
         except Exception as e:
             result["error"] = str(e)
             if self.verbose:
-                print(f"✗ Error generating report: {e}")
+                print(f"✗ Error: {e}")
+                import traceback
+                traceback.print_exc()
 
         return result
 
-    def _generate_pdf_report(
-        self,
-        filepath: Path,
-        query: str,
-        agent_responses: List[Dict[str, Any]],
-        synthesized_response: str,
-    ) -> bool:
-        """
-        Generate PDF report using reportlab
-
-        Args:
-            filepath: Output file path
-            query: User query
-            agent_responses: Agent responses
-            synthesized_response: Synthesized text
-
-        Returns:
-            Success boolean
-        """
+    def _generate_pdf(self, filepath, query, agent_responses, synthesized_response):
+        """Generate PDF report"""
+        
         if not REPORTLAB_AVAILABLE:
-            # Fallback: Generate simple text file
-            return self._generate_text_report(
-                filepath, query, agent_responses, synthesized_response
-            )
+            if self.verbose:
+                print("⚠ ReportLab not available, using text fallback")
+            return self._generate_text(filepath, query, agent_responses, synthesized_response)
 
         try:
-            # Create PDF document
+            if self.verbose:
+                print(f"  Creating PDF: {filepath}")
+
+            # Create document
             doc = SimpleDocTemplate(
                 str(filepath),
                 pagesize=letter,
-                rightMargin=72,
-                leftMargin=72,
-                topMargin=72,
-                bottomMargin=18,
+                rightMargin=0.75*inch,
+                leftMargin=0.75*inch,
+                topMargin=1*inch,
+                bottomMargin=0.75*inch,
             )
 
-            # Container for elements
             elements = []
+            styles = self._get_styles()
 
-            # Styles
-            styles = getSampleStyleSheet()
-            title_style = ParagraphStyle(
-                "CustomTitle",
-                parent=styles["Heading1"],
-                fontSize=24,
-                textColor=colors.HexColor("#1f77b4"),
-                spaceAfter=30,
-            )
-
-            # Title
-            elements.append(
-                Paragraph("Pharma Agentic AI - Analysis Report", title_style)
-            )
-            elements.append(Spacer(1, 12))
-
-            # Metadata
-            metadata_data = [
-                ["Generated:", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
-                ["Query:", query],
-                ["Agents Used:", len(agent_responses)],
-            ]
-            metadata_table = Table(metadata_data, colWidths=[1.5 * inch, 5 * inch])
-            metadata_table.setStyle(
-                TableStyle(
-                    [
-                        ("BACKGROUND", (0, 0), (0, -1), colors.grey),
-                        ("TEXTCOLOR", (0, 0), (0, -1), colors.whitesmoke),
-                        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-                        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-                        ("FONTSIZE", (0, 0), (-1, -1), 10),
-                        ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
-                        ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                    ]
-                )
-            )
-            elements.append(metadata_table)
-            elements.append(Spacer(1, 20))
-
-            # Executive Summary
-            elements.append(Paragraph("Executive Summary", styles["Heading2"]))
-            elements.append(Spacer(1, 12))
-
-            # Split synthesized response into paragraphs
-            for para in synthesized_response.split("\n\n"):
-                if para.strip():
-                    # Handle markdown headers
-                    if para.startswith("##"):
-                        elements.append(
-                            Paragraph(
-                                para.replace("##", "").strip(), styles["Heading3"]
-                            )
-                        )
-                    elif para.startswith("#"):
-                        elements.append(
-                            Paragraph(para.replace("#", "").strip(), styles["Heading2"])
-                        )
-                    else:
-                        elements.append(Paragraph(para.strip(), styles["BodyText"]))
-                    elements.append(Spacer(1, 12))
-
-            # Agent Responses Section
+            # Cover page
+            elements.extend(self._create_cover(query, styles))
             elements.append(PageBreak())
-            elements.append(Paragraph("Detailed Agent Responses", styles["Heading2"]))
-            elements.append(Spacer(1, 12))
 
-            for i, response in enumerate(agent_responses, 1):
-                agent_name = response.get("agent", "Unknown").upper()
-                success = response.get("success", False)
+            # Executive summary
+            elements.append(Paragraph("Executive Summary", styles['CustomHeading1']))
+            elements.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor("#1f77b4")))
+            elements.append(Spacer(1, 0.2*inch))
+            
+            # Parse and add synthesized response with proper formatting
+            summary_elements = self._parse_markdown_text(synthesized_response, styles)
+            elements.extend(summary_elements)
+            
+            elements.append(PageBreak())
 
-                # Agent header
-                elements.append(
-                    Paragraph(f"{i}. {agent_name} Agent", styles["Heading3"])
-                )
-                elements.append(Spacer(1, 6))
-
-                # Status
-                status_text = "✓ Success" if success else "✗ Failed"
-                colors.green if success else colors.red
-                elements.append(Paragraph(f"Status: {status_text}", styles["BodyText"]))
-                elements.append(Spacer(1, 6))
-
-                # Data summary
-                if success and response.get("data"):
-                    data_str = json.dumps(response["data"], indent=2)[
-                        :500
-                    ]  # Limit to 500 chars
-                    elements.append(
-                        Paragraph(f"<pre>{data_str}...</pre>", styles["Code"])
-                    )
+            # Charts section
+            if MATPLOTLIB_AVAILABLE:
+                elements.append(Paragraph("Data Visualizations", styles['CustomHeading1']))
+                elements.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor("#1f77b4")))
+                elements.append(Spacer(1, 0.2*inch))
+                
+                charts = self._create_all_charts(agent_responses, styles)
+                if charts:
+                    elements.extend(charts)
                 else:
-                    error_msg = response.get("error", "No data available")
-                    elements.append(
-                        Paragraph(f"Error: {error_msg}", styles["BodyText"])
-                    )
+                    elements.append(Paragraph("<i>No visualizations available</i>", styles['CustomItalic']))
+                
+                elements.append(PageBreak())
 
-                elements.append(Spacer(1, 12))
+            # Agent responses
+            elements.append(Paragraph("Detailed Analysis", styles['CustomHeading1']))
+            elements.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor("#1f77b4")))
+            elements.append(Spacer(1, 0.2*inch))
+            
+            for i, resp in enumerate(agent_responses, 1):
+                elements.extend(self._format_agent(resp, i, styles))
+                if i < len(agent_responses):
+                    elements.append(Spacer(1, 0.1*inch))
+                    elements.append(HRFlowable(width="100%", thickness=1, color=colors.lightgrey))
+                    elements.append(Spacer(1, 0.1*inch))
 
             # Build PDF
-            doc.build(elements)
-            return True
+            if self.verbose:
+                print(f"  Building PDF with {len(elements)} elements...")
+            
+            doc.build(elements, onFirstPage=self._add_page_num, onLaterPages=self._add_page_num)
+            
+            if self.verbose:
+                print(f"  ✓ PDF built")
+                print(f"  File exists: {filepath.exists()}")
+            
+            return filepath.exists()
 
         except Exception as e:
             if self.verbose:
-                print(f"✗ PDF generation error: {e}")
-            return False
+                print(f"  ✗ PDF error: {e}")
+                import traceback
+                traceback.print_exc()
+            
+            # Fallback to text
+            return self._generate_text(filepath, query, agent_responses, synthesized_response)
 
-    def _generate_text_report(
-        self,
-        filepath: Path,
-        query: str,
-        agent_responses: List[Dict[str, Any]],
-        synthesized_response: str,
-    ) -> bool:
-        """
-        Generate simple text report (fallback if reportlab unavailable)
+    def _get_styles(self):
+        """Get paragraph styles"""
+        styles = getSampleStyleSheet()
+        
+        # Use custom names to avoid conflicts with existing styles
+        styles.add(ParagraphStyle(
+            name='CustomHeading1',
+            parent=styles['Heading1'],
+            fontSize=18,
+            textColor=colors.HexColor("#1f77b4"),
+            spaceAfter=0.15*inch,
+            fontName='Helvetica-Bold',
+        ))
+        
+        styles.add(ParagraphStyle(
+            name='CustomHeading2',
+            parent=styles['Heading2'],
+            fontSize=14,
+            textColor=colors.HexColor("#2ca02c"),
+            spaceAfter=0.1*inch,
+            fontName='Helvetica-Bold',
+        ))
+        
+        styles.add(ParagraphStyle(
+            name='CustomBodyText',
+            parent=styles['Normal'],
+            fontSize=11,
+            leading=14,
+            spaceAfter=0.1*inch,
+            alignment=TA_JUSTIFY,
+            fontName='Helvetica'
+        ))
+        
+        styles.add(ParagraphStyle(
+            name='CustomItalic',
+            parent=styles['Normal'],
+            fontSize=11,
+            fontName='Helvetica-Oblique',
+            textColor=colors.HexColor("#666666")
+        ))
+        
+        styles.add(ParagraphStyle(
+            name='CustomHeading3',
+            parent=styles['Heading3'],
+            fontSize=12,
+            textColor=colors.HexColor("#d62728"),
+            spaceAfter=0.08*inch,
+            spaceBefore=0.1*inch,
+            fontName='Helvetica-Bold',
+        ))
+        
+        styles.add(ParagraphStyle(
+            name='CustomBullet',
+            parent=styles['Normal'],
+            fontSize=11,
+            leftIndent=0.3*inch,
+            bulletIndent=0.1*inch,
+            spaceAfter=6,
+            fontName='Helvetica'
+        ))
+        
+        return styles
 
-        Args:
-            filepath: Output file path (will be .txt)
-            query: User query
-            agent_responses: Agent responses
-            synthesized_response: Synthesized text
+    def _parse_markdown_text(self, text, styles):
+        """Parse markdown-style text to formatted PDF elements"""
+        elements = []
+        lines = text.split('\n')
+        
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()
+            
+            if not line:
+                i += 1
+                continue
+            
+            # Headers
+            if line.startswith('### '):
+                header_text = line.replace('### ', '').strip()
+                elements.append(Paragraph(f"<b>{header_text}</b>", styles['CustomHeading3']))
+            elif line.startswith('## '):
+                header_text = line.replace('## ', '').strip()
+                elements.append(Paragraph(f"<b>{header_text}</b>", styles['CustomHeading2']))
+            elif line.startswith('# '):
+                header_text = line.replace('# ', '').strip()
+                elements.append(Paragraph(f"<b>{header_text}</b>", styles['CustomHeading1']))
+            
+            # Bullet points
+            elif line.startswith('- ') or line.startswith('* '):
+                bullet_text = line[2:].strip()
+                # Format bold items
+                bullet_text = self._format_inline_markdown(bullet_text)
+                elements.append(Paragraph(f"• {bullet_text}", styles['CustomBullet']))
+            
+            # Numbered lists
+            elif len(line) > 2 and line[0].isdigit() and line[1:3] in ['. ', ') ']:
+                list_text = line.split('. ', 1)[1] if '. ' in line else line.split(') ', 1)[1]
+                list_text = self._format_inline_markdown(list_text)
+                elements.append(Paragraph(f"{line.split()[0]} {list_text}", styles['CustomBullet']))
+            
+            # Bold standalone lines (like **Clinical Trials**)
+            elif line.startswith('**') and line.endswith('**'):
+                bold_text = line.strip('**')
+                elements.append(Paragraph(f"<b>{bold_text}</b>", styles['CustomHeading3']))
+            
+            # Regular paragraphs
+            else:
+                formatted_text = self._format_inline_markdown(line)
+                elements.append(Paragraph(formatted_text, styles['CustomBodyText']))
+            
+            elements.append(Spacer(1, 0.08*inch))
+            i += 1
+        
+        return elements
 
-        Returns:
-            Success boolean
-        """
+    def _format_inline_markdown(self, text):
+        """Format inline markdown (bold, italic)"""
+        # Bold text: **text** or __text__
+        import re
+        text = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', text)
+        text = re.sub(r'__(.*?)__', r'<b>\1</b>', text)
+        
+        # Italic text: *text* or _text_
+        text = re.sub(r'\*(.*?)\*', r'<i>\1</i>', text)
+        text = re.sub(r'_(.*?)_', r'<i>\1</i>', text)
+        
+        # Escape special characters for XML
+        text = text.replace('&', '&amp;')
+        
+        return text
+
+    def _create_cover(self, query, styles):
+        """Create cover page"""
+        elements = []
+        elements.append(Spacer(1, 1*inch))
+        elements.append(Paragraph(
+            "<b>Pharmaceutical Intelligence Report</b>",
+            ParagraphStyle(
+                'Title',
+                parent=styles['Normal'],
+                fontSize=28,
+                textColor=colors.HexColor("#1f77b4"),
+                alignment=TA_CENTER,
+                fontName='Helvetica-Bold'
+            )
+        ))
+        elements.append(Spacer(1, 0.3*inch))
+        elements.append(Paragraph(
+            f"<i>{query}</i>",
+            ParagraphStyle(
+                'Subtitle',
+                parent=styles['Normal'],
+                fontSize=14,
+                alignment=TA_CENTER,
+                fontName='Helvetica-Oblique'
+            )
+        ))
+        elements.append(Spacer(1, 0.5*inch))
+        
+        # Metadata table
+        metadata = [
+            ['Generated:', datetime.now().strftime("%B %d, %Y at %H:%M")],
+            ['Powered By:', 'Pharma Agentic AI Platform'],
+        ]
+        
+        table = Table(metadata, colWidths=[2*inch, 3.5*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor("#f0f0f0")),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 11),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ]))
+        
+        elements.append(table)
+        return elements
+
+    def _create_all_charts(self, agent_responses, styles):
+        """Create all charts"""
+        if not MATPLOTLIB_AVAILABLE:
+            return []
+        
+        elements = []
+        
+        for resp in agent_responses:
+            if not resp.get("success"):
+                continue
+            
+            agent = resp.get("agent", "")
+            data = resp.get("data", {})
+            
+            if agent == "iqvia":
+                charts = self._create_iqvia_charts(data)
+                if charts:
+                    elements.append(Paragraph("<b>Market Analysis</b>", styles['CustomHeading2']))
+                    elements.extend(charts)
+            
+            elif agent == "clinical_trials":
+                charts = self._create_ct_charts(data)
+                if charts:
+                    elements.append(Paragraph("<b>Clinical Trials</b>", styles['CustomHeading2']))
+                    elements.extend(charts)
+            
+            elif agent == "patent":
+                charts = self._create_patent_charts(data)
+                if charts:
+                    elements.append(Paragraph("<b>Patent Landscape</b>", styles['CustomHeading2']))
+                    elements.extend(charts)
+            
+            elif agent == "exim":
+                charts = self._create_exim_charts(data)
+                if charts:
+                    elements.append(Paragraph("<b>Trade Analysis</b>", styles['CustomHeading2']))
+                    elements.extend(charts)
+        
+        return elements
+
+    def _create_iqvia_charts(self, data):
+        """Create IQVIA charts - ALL OF THEM"""
+        charts = []
+        
         try:
-            # Change extension to .txt
-            txt_filepath = filepath.with_suffix(".txt")
-
-            with open(txt_filepath, "w", encoding="utf-8") as f:
-                f.write("=" * 70 + "\n")
-                f.write("PHARMA AGENTIC AI - ANALYSIS REPORT\n")
-                f.write("=" * 70 + "\n\n")
-
-                # Metadata
-                f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                f.write(f"Query: {query}\n")
-                f.write(f"Agents Used: {len(agent_responses)}\n")
-                f.write("\n" + "=" * 70 + "\n\n")
-
-                # Executive Summary
-                f.write("EXECUTIVE SUMMARY\n")
-                f.write("-" * 70 + "\n\n")
-                f.write(synthesized_response)
-                f.write("\n\n" + "=" * 70 + "\n\n")
-
-                # Agent Responses
-                f.write("DETAILED AGENT RESPONSES\n")
-                f.write("-" * 70 + "\n\n")
-
-                for i, response in enumerate(agent_responses, 1):
-                    agent_name = response.get("agent", "Unknown").upper()
-                    success = response.get("success", False)
-
-                    f.write(f"{i}. {agent_name} AGENT\n")
-                    f.write("-" * 40 + "\n")
-                    f.write(f"Status: {'Success' if success else 'Failed'}\n\n")
-
-                    if success and response.get("data"):
-                        f.write("Data:\n")
-                        f.write(json.dumps(response["data"], indent=2))
-                        f.write("\n")
-                    else:
-                        f.write(f"Error: {response.get('error', 'No data')}\n")
-
-                    f.write("\n" + "-" * 40 + "\n\n")
-
-                f.write("=" * 70 + "\n")
-                f.write("END OF REPORT\n")
-                f.write("=" * 70 + "\n")
-
-            return True
-
+            analyses = data.get("drug_analyses", [])
+            if not analyses:
+                return charts
+            
+            # Chart 1: Market size bar chart
+            fig, ax = plt.subplots(figsize=(8, 4))
+            drugs = [d.get("drug_name", "Unknown") for d in analyses[:5]]
+            sales = [d.get("market_metrics", {}).get("current_sales_usd_million", 0) for d in analyses[:5]]
+            
+            ax.bar(drugs, sales, color='#1f77b4', alpha=0.7)
+            ax.set_ylabel('Sales (USD Million)', fontweight='bold')
+            ax.set_title('Market Size Comparison', fontweight='bold', pad=15)
+            ax.grid(axis='y', alpha=0.3)
+            
+            # Add value labels
+            for i, v in enumerate(sales):
+                ax.text(i, v, f'${v:.0f}M', ha='center', va='bottom', fontweight='bold')
+            
+            plt.xticks(rotation=45, ha='right')
+            plt.tight_layout()
+            
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+            plt.close(fig)
+            buf.seek(0)
+            
+            charts.append(Image(buf, width=6*inch, height=3*inch))
+            charts.append(Spacer(1, 0.15*inch))
+            
+            # Chart 2: CAGR comparison
+            if len(analyses) > 1:
+                fig, ax = plt.subplots(figsize=(8, 4))
+                cagr = [d.get("market_metrics", {}).get("cagr_percent", 0) for d in analyses[:5]]
+                
+                colors = ['#2ca02c' if c >= 0 else '#d62728' for c in cagr]
+                bars = ax.barh(drugs, cagr, color=colors, alpha=0.7)
+                
+                ax.set_xlabel('CAGR (%)', fontweight='bold')
+                ax.set_title('Growth Rate (CAGR) Comparison', fontweight='bold', pad=15)
+                ax.grid(axis='x', alpha=0.3)
+                ax.axvline(x=0, color='black', linewidth=0.8)
+                
+                # Add value labels
+                for i, v in enumerate(cagr):
+                    label_x = v + 0.5 if v >= 0 else v - 0.5
+                    ax.text(label_x, i, f'{v:.1f}%', va='center', fontweight='bold')
+                
+                plt.tight_layout()
+                
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+                plt.close(fig)
+                buf.seek(0)
+                
+                charts.append(Image(buf, width=6*inch, height=3*inch))
+                charts.append(Spacer(1, 0.15*inch))
+        
         except Exception as e:
             if self.verbose:
-                print(f"✗ Text report generation error: {e}")
+                print(f"  ⚠ IQVIA chart error: {e}")
+        
+        return charts
+
+    def _create_ct_charts(self, data):
+        """Create clinical trials charts - ALL OF THEM"""
+        charts = []
+        
+        try:
+            # Chart 1: Phase distribution pie chart
+            phase_dist = data.get("phase_distribution", {}).get("distribution", {})
+            if phase_dist:
+                fig, ax = plt.subplots(figsize=(7, 5))
+                phases = list(phase_dist.keys())
+                counts = [phase_dist[p]["count"] for p in phases]
+                
+                colors_pie = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']
+                wedges, texts, autotexts = ax.pie(counts, labels=phases, autopct='%1.1f%%',
+                                                   colors=colors_pie[:len(phases)], startangle=90)
+                
+                for autotext in autotexts:
+                    autotext.set_color('white')
+                    autotext.set_fontweight('bold')
+                
+                ax.set_title('Trial Phase Distribution', fontweight='bold', pad=15)
+                plt.tight_layout()
+                
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+                plt.close(fig)
+                buf.seek(0)
+                
+                charts.append(Image(buf, width=5*inch, height=4*inch))
+                charts.append(Spacer(1, 0.15*inch))
+            
+            # Chart 2: Status distribution bar chart
+            status_summary = data.get("status_summary", {}).get("distribution", {})
+            if status_summary:
+                fig, ax = plt.subplots(figsize=(8, 4))
+                
+                statuses = list(status_summary.keys())
+                counts_status = [status_summary[s]["count"] for s in statuses]
+                
+                bars = ax.bar(statuses, counts_status, color='#2ca02c', alpha=0.7)
+                
+                ax.set_ylabel('Number of Trials', fontweight='bold')
+                ax.set_title('Trial Status Distribution', fontweight='bold', pad=15)
+                ax.grid(axis='y', alpha=0.3)
+                
+                # Add value labels
+                for bar in bars:
+                    height = bar.get_height()
+                    ax.text(bar.get_x() + bar.get_width()/2., height,
+                           f'{int(height)}', ha='center', va='bottom', fontweight='bold')
+                
+                plt.xticks(rotation=45, ha='right')
+                plt.tight_layout()
+                
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+                plt.close(fig)
+                buf.seek(0)
+                
+                charts.append(Image(buf, width=6*inch, height=3*inch))
+                charts.append(Spacer(1, 0.15*inch))
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"  ⚠ CT chart error: {e}")
+        
+        return charts
+
+    def _create_patent_charts(self, data):
+        """Create patent charts - ALL OF THEM"""
+        charts = []
+        
+        try:
+            # Chart 1: Expiry timeline bar chart
+            timeline = data.get("expiry_timeline", {})
+            if timeline:
+                fig, ax = plt.subplots(figsize=(8, 4))
+                categories = ['Expired', 'Soon\n(0-2y)', 'Medium\n(2-5y)', 'Long\n(5+y)']
+                counts = [
+                    timeline.get("expired_count", 0),
+                    timeline.get("expiring_soon_count", 0),
+                    timeline.get("expiring_medium_count", 0),
+                    timeline.get("expiring_long_count", 0)
+                ]
+                
+                colors_exp = ['#d62728', '#ff7f0e', '#ffbb78', '#2ca02c']
+                bars = ax.bar(categories, counts, color=colors_exp)
+                
+                ax.set_ylabel('Number of Patents', fontweight='bold')
+                ax.set_title('Patent Expiry Timeline', fontweight='bold', pad=15)
+                ax.grid(axis='y', alpha=0.3)
+                
+                # Add value labels
+                for bar in bars:
+                    height = bar.get_height()
+                    if height > 0:
+                        ax.text(bar.get_x() + bar.get_width()/2., height,
+                               f'{int(height)}', ha='center', va='bottom', fontweight='bold')
+                
+                plt.tight_layout()
+                
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+                plt.close(fig)
+                buf.seek(0)
+                
+                charts.append(Image(buf, width=6*inch, height=3*inch))
+                charts.append(Spacer(1, 0.15*inch))
+            
+            # Chart 2: Top patent holders
+            competitive = data.get("competitive_landscape", {})
+            top_assignees = competitive.get("top_assignees", [])
+            
+            if top_assignees and len(top_assignees) > 0:
+                fig, ax = plt.subplots(figsize=(8, 5))
+                
+                assignees = [a["assignee"][:30] + "..." if len(a["assignee"]) > 30 else a["assignee"] 
+                            for a in top_assignees[:8]]
+                patent_counts = [a["patent_count"] for a in top_assignees[:8]]
+                
+                bars = ax.barh(assignees, patent_counts, color='#1f77b4', alpha=0.7)
+                
+                ax.set_xlabel('Number of Patents', fontweight='bold')
+                ax.set_title('Top Patent Holders', fontweight='bold', pad=15)
+                ax.grid(axis='x', alpha=0.3)
+                
+                # Add value labels
+                for i, (bar, val) in enumerate(zip(bars, patent_counts)):
+                    ax.text(val, i, f'  {val}', va='center', fontweight='bold')
+                
+                plt.tight_layout()
+                
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+                plt.close(fig)
+                buf.seek(0)
+                
+                charts.append(Image(buf, width=6*inch, height=4*inch))
+                charts.append(Spacer(1, 0.15*inch))
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"  ⚠ Patent chart error: {e}")
+        
+        return charts
+
+    def _create_exim_charts(self, data):
+        """Create EXIM charts - ALL OF THEM"""
+        charts = []
+        
+        try:
+            analyses = data.get("drug_analyses", [])
+            if not analyses:
+                return charts
+            
+            # Chart 1: Import/Export comparison
+            fig, ax = plt.subplots(figsize=(8, 4))
+            drugs = [d.get("drug_name", "Unknown") for d in analyses[:5]]
+            imports = [d.get("trade_metrics", {}).get("total_import_value_usd", 0)/1e6 for d in analyses[:5]]
+            exports = [d.get("trade_metrics", {}).get("total_export_value_usd", 0)/1e6 for d in analyses[:5]]
+            
+            x = range(len(drugs))
+            width = 0.35
+            ax.bar([i-width/2 for i in x], imports, width, label='Imports', color='#d62728', alpha=0.8)
+            ax.bar([i+width/2 for i in x], exports, width, label='Exports', color='#2ca02c', alpha=0.8)
+            
+            ax.set_ylabel('Trade Value (USD Million)', fontweight='bold')
+            ax.set_title('Import vs Export Comparison', fontweight='bold', pad=15)
+            ax.set_xticks(x)
+            ax.set_xticklabels(drugs, rotation=45, ha='right')
+            ax.legend(loc='upper left', frameon=True, shadow=True)
+            ax.grid(axis='y', alpha=0.3)
+            plt.tight_layout()
+            
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+            plt.close(fig)
+            buf.seek(0)
+            
+            charts.append(Image(buf, width=6*inch, height=3*inch))
+            charts.append(Spacer(1, 0.15*inch))
+            
+            # Chart 2: Trade balance
+            if len(analyses) > 0:
+                fig, ax = plt.subplots(figsize=(8, 4))
+                
+                balance = []
+                for d in analyses[:5]:
+                    metrics = d.get("trade_metrics", {})
+                    exp = metrics.get("total_export_value_usd", 0)
+                    imp = metrics.get("total_import_value_usd", 0)
+                    balance.append((exp - imp) / 1e6)
+                
+                colors_balance = ['#2ca02c' if b >= 0 else '#d62728' for b in balance]
+                bars = ax.barh(drugs, balance, color=colors_balance, alpha=0.7)
+                
+                ax.set_xlabel('Net Trade Balance (USD Million)', fontweight='bold')
+                ax.set_title('Trade Balance by Drug (Exports - Imports)', fontweight='bold', pad=15)
+                ax.grid(axis='x', alpha=0.3)
+                ax.axvline(x=0, color='black', linewidth=1)
+                
+                # Add value labels
+                for i, (bar, val) in enumerate(zip(bars, balance)):
+                    label = f'${val:.1f}M'
+                    if val >= 0:
+                        ax.text(val, i, f'  {label}', va='center', fontweight='bold')
+                    else:
+                        ax.text(val, i, f'{label}  ', va='center', ha='right', fontweight='bold')
+                
+                plt.tight_layout()
+                
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+                plt.close(fig)
+                buf.seek(0)
+                
+                charts.append(Image(buf, width=6*inch, height=3*inch))
+                charts.append(Spacer(1, 0.15*inch))
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"  ⚠ EXIM chart error: {e}")
+        
+        return charts
+
+    def _format_agent(self, resp, index, styles):
+        """Format agent response with better structure"""
+        elements = []
+        
+        agent = resp.get("agent", "Unknown").upper()
+        success = resp.get("success", False)
+        data = resp.get("data", {})
+        
+        # Agent header
+        elements.append(Paragraph(f"<b>{index}. {agent} Intelligence</b>", styles['CustomHeading2']))
+        elements.append(Spacer(1, 0.05*inch))
+        
+        if success and data:
+            # Summary
+            summary = data.get("summary", "")
+            if summary:
+                elements.append(Paragraph(f"<b>Summary:</b> {summary}", styles['CustomBodyText']))
+                elements.append(Spacer(1, 0.1*inch))
+            
+            # Special formatting for Clinical Trials
+            if agent == "CLINICAL_TRIALS":
+                elements.extend(self._format_clinical_trials_details(data, styles))
+            
+            # Special formatting for IQVIA
+            elif agent == "IQVIA":
+                elements.extend(self._format_iqvia_details(data, styles))
+            
+            # Special formatting for Patents
+            elif agent == "PATENT":
+                elements.extend(self._format_patent_details(data, styles))
+            
+            # Special formatting for EXIM
+            elif agent == "EXIM":
+                elements.extend(self._format_exim_details(data, styles))
+            
+            else:
+                # Generic formatting for other agents
+                elements.append(Paragraph("<i>Detailed analysis available in raw data</i>", styles['CustomItalic']))
+        else:
+            elements.append(Paragraph(
+                f"<font color='red'><i>Error: {resp.get('error', 'No data available')}</i></font>",
+                styles['CustomItalic']
+            ))
+        
+        elements.append(Spacer(1, 0.15*inch))
+        return elements
+
+    def _format_clinical_trials_details(self, data, styles):
+        """Format clinical trials with ONLY clean tables - no text duplication"""
+        elements = []
+        
+        # Stats summary
+        total = data.get("total_trials_found", 0)
+        active = data.get("status_summary", {}).get("active_trials", 0)
+        phase_dist = data.get("phase_distribution", {})
+        advanced = phase_dist.get("advanced_trials_count", 0)
+        
+        stats_text = f"<b>Overview:</b> {total} trials found | {active} active | {advanced} in advanced phases (Phase 3/4)"
+        elements.append(Paragraph(stats_text, styles['CustomBodyText']))
+        elements.append(Spacer(1, 0.15*inch))
+        
+        # Show ALL trials in tables (no text format)
+        trials = data.get("detailed_trials", [])
+        if trials:
+            elements.append(Paragraph(f"<b>Trial Details ({len(trials)} trials):</b>", styles['CustomHeading3']))
+            elements.append(Spacer(1, 0.1*inch))
+            
+            # Create comprehensive table data
+            table_data = [['Trial ID', 'Title', 'Phase', 'Status', 'Sponsor', 'Timeline']]
+            
+            for trial in trials:
+                title = trial.get('title', 'N/A')
+                if len(title) > 80:
+                    title = title[:77] + "..."
+                
+                timeline = f"{trial.get('start_date', 'N/A')[:7]} to {trial.get('completion_date', 'N/A')[:7]}"
+                
+                table_data.append([
+                    trial.get('nct_id', 'N/A'),
+                    title,
+                    trial.get('phase', 'N/A'),
+                    trial.get('status', 'N/A'),
+                    trial.get('sponsor', 'N/A')[:30] + "..." if len(trial.get('sponsor', '')) > 30 else trial.get('sponsor', 'N/A'),
+                    timeline
+                ])
+            
+            # Create wide table
+            trials_table = Table(table_data, colWidths=[0.8*inch, 2.2*inch, 0.7*inch, 0.9*inch, 1.5*inch, 0.9*inch])
+            trials_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#1f77b4")),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 0), (-1, -1), 8),
+                ('TOPPADDING', (0, 0), (-1, -1), 4),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#f0f8ff")]),
+            ]))
+            
+            elements.append(trials_table)
+            elements.append(Spacer(1, 0.15*inch))
+            
+            # Additional details table for interventions/conditions
+            if len(trials) > 0:
+                elements.append(Paragraph("<b>Trial Interventions & Conditions:</b>", styles['CustomHeading3']))
+                elements.append(Spacer(1, 0.05*inch))
+                
+                detail_data = [['Trial ID', 'Interventions', 'Conditions']]
+                
+                for trial in trials[:10]:  # Show details for top 10
+                    interventions = ', '.join(trial.get('interventions', [])[:3])
+                    if len(interventions) > 60:
+                        interventions = interventions[:57] + "..."
+                    
+                    conditions = ', '.join(trial.get('conditions', [])[:3])
+                    if len(conditions) > 60:
+                        conditions = conditions[:57] + "..."
+                    
+                    detail_data.append([
+                        trial.get('nct_id', 'N/A'),
+                        interventions if interventions else 'N/A',
+                        conditions if conditions else 'N/A'
+                    ])
+                
+                detail_table = Table(detail_data, colWidths=[0.8*inch, 3*inch, 3*inch])
+                detail_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#2ca02c")),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 8),
+                    ('TOPPADDING', (0, 0), (-1, -1), 4),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                    ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                    ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#e8f4f8")]),
+                ]))
+                
+                elements.append(detail_table)
+                elements.append(Spacer(1, 0.1*inch))
+        
+        return elements
+
+    def _format_iqvia_details(self, data, styles):
+        """Format IQVIA market data - TABLE FORMAT ONLY"""
+        elements = []
+        
+        drug_analyses = data.get("drug_analyses", [])
+        if drug_analyses:
+            elements.append(Paragraph("<b>Market Analysis Summary:</b>", styles['CustomHeading3']))
+            elements.append(Spacer(1, 0.1*inch))
+            
+            # Comprehensive market table
+            table_data = [['Drug', 'Therapeutic Area', 'Sales (USD M)', 'CAGR (%)', 'Trend', 'Prescriptions (M)']]
+            
+            for drug in drug_analyses:
+                metrics = drug.get("market_metrics", {})
+                table_data.append([
+                    drug.get('drug_name', 'N/A'),
+                    drug.get('therapeutic_area', 'N/A'),
+                    f"${metrics.get('current_sales_usd_million', 0):.1f}",
+                    f"{metrics.get('cagr_percent', 0):.1f}%",
+                    metrics.get('market_trend', 'N/A'),
+                    f"{metrics.get('current_prescriptions_million', 0):.1f}" if metrics.get('current_prescriptions_million') else 'N/A'
+                ])
+            
+            market_table = Table(table_data, colWidths=[1.2*inch, 1.3*inch, 1*inch, 0.8*inch, 0.9*inch, 1*inch])
+            market_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#1f77b4")),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (2, 1), (5, -1), 'RIGHT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('TOPPADDING', (0, 0), (-1, -1), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#f0f8ff")]),
+            ]))
+            
+            elements.append(market_table)
+            elements.append(Spacer(1, 0.1*inch))
+        
+        return elements
+
+    def _format_patent_details(self, data, styles):
+        """Format patent landscape data - TABLE FORMAT ONLY"""
+        elements = []
+        
+        total = data.get("total_patents_found", 0)
+        expiry = data.get("expiry_timeline", {})
+        fto = data.get("fto_assessment", {})
+        
+        patent_summary = f"<b>Overview:</b> {total} patents analyzed | FTO Risk: {fto.get('risk_level', 'Unknown')} | {expiry.get('expiring_soon_count', 0)} expiring within 2 years"
+        elements.append(Paragraph(patent_summary, styles['CustomBodyText']))
+        elements.append(Spacer(1, 0.15*inch))
+        
+        # Patent details table
+        detailed_patents = data.get("detailed_patents", [])
+        if detailed_patents:
+            elements.append(Paragraph(f"<b>Patent Portfolio ({len(detailed_patents)} patents):</b>", styles['CustomHeading3']))
+            elements.append(Spacer(1, 0.1*inch))
+            
+            table_data = [['Patent #', 'Title', 'Assignee', 'Grant Date', 'Expiry Date', 'Status']]
+            
+            for patent in detailed_patents[:15]:  # Show top 15
+                title = patent.get('title', 'N/A')
+                if len(title) > 50:
+                    title = title[:47] + "..."
+                
+                assignee = patent.get('assignee', 'N/A')
+                if len(assignee) > 25:
+                    assignee = assignee[:22] + "..."
+                
+                table_data.append([
+                    patent.get('patent_number', 'N/A'),
+                    title,
+                    assignee,
+                    patent.get('grant_date', 'N/A')[:10],
+                    patent.get('expiry_date', 'N/A')[:10],
+                    patent.get('status', 'N/A')
+                ])
+            
+            patent_table = Table(table_data, colWidths=[0.9*inch, 2*inch, 1.3*inch, 0.9*inch, 0.9*inch, 0.8*inch])
+            patent_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#d62728")),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 0), (-1, -1), 8),
+                ('TOPPADDING', (0, 0), (-1, -1), 4),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#ffe6e6")]),
+            ]))
+            
+            elements.append(patent_table)
+            elements.append(Spacer(1, 0.1*inch))
+        
+        return elements
+
+    def _format_exim_details(self, data, styles):
+        """Format EXIM trade data - TABLE FORMAT ONLY"""
+        elements = []
+        
+        drug_analyses = data.get("drug_analyses", [])
+        if drug_analyses:
+            elements.append(Paragraph("<b>Trade Analysis Summary:</b>", styles['CustomHeading3']))
+            elements.append(Spacer(1, 0.1*inch))
+            
+            # Trade summary table
+            table_data = [['Drug', 'Imports (USD)', 'Exports (USD)', 'Balance', 'Records', 'Year']]
+            
+            for drug in drug_analyses:
+                metrics = drug.get("trade_metrics", {})
+                table_data.append([
+                    drug.get('drug_name', 'N/A'),
+                    f"${metrics.get('total_import_value_usd', 0):,.0f}",
+                    f"${metrics.get('total_export_value_usd', 0):,.0f}",
+                    metrics.get('trade_balance', 'N/A'),
+                    str(metrics.get('number_of_trade_records', 0)),
+                    metrics.get('data_year', 'N/A')
+                ])
+            
+            trade_table = Table(table_data, colWidths=[1.2*inch, 1.3*inch, 1.3*inch, 1*inch, 0.7*inch, 0.6*inch])
+            trade_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#2ca02c")),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (1, 1), (5, -1), 'RIGHT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('TOPPADDING', (0, 0), (-1, -1), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#e8f5e9")]),
+            ]))
+            
+            elements.append(trade_table)
+            elements.append(Spacer(1, 0.15*inch))
+            
+            # Top trading partners table (if available)
+            for drug in drug_analyses[:2]:  # Show partners for top 2 drugs
+                partners = drug.get("top_trading_partners", [])
+                if partners:
+                    elements.append(Paragraph(f"<b>Top Partners for {drug.get('drug_name')}:</b>", styles['CustomHeading3']))
+                    elements.append(Spacer(1, 0.05*inch))
+                    
+                    partner_data = [['Country', 'Trade Value (USD)', 'Flow']]
+                    for partner in partners[:5]:
+                        partner_data.append([
+                            partner.get('country', 'N/A'),
+                            f"${partner.get('total_value_usd', 0):,.0f}",
+                            partner.get('flow', 'N/A') if 'flow' in partner else 'Mixed'
+                        ])
+                    
+                    partner_table = Table(partner_data, colWidths=[2*inch, 1.5*inch, 1*inch])
+                    partner_table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#ff7f0e")),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                        ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                        ('FONTSIZE', (0, 0), (-1, -1), 9),
+                        ('TOPPADDING', (0, 0), (-1, -1), 5),
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#fff3e0")]),
+                    ]))
+                    
+                    elements.append(partner_table)
+                    elements.append(Spacer(1, 0.1*inch))
+        
+        return elements
+
+    def _add_page_num(self, canvas, doc):
+        """Add page number"""
+        canvas.saveState()
+        canvas.setFont('Helvetica', 9)
+        canvas.setFillColor(colors.grey)
+        canvas.drawRightString(7.5*inch, 0.5*inch, f"Page {canvas.getPageNumber()}")
+        canvas.restoreState()
+
+    def _generate_text(self, filepath, query, agent_responses, synthesized_response):
+        """Generate text fallback"""
+        try:
+            txt_path = filepath.with_suffix(".txt")
+            
+            with open(txt_path, "w", encoding="utf-8") as f:
+                f.write("="*70 + "\n")
+                f.write("PHARMACEUTICAL INTELLIGENCE REPORT\n")
+                f.write("="*70 + "\n\n")
+                f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Query: {query}\n\n")
+                f.write("="*70 + "\n")
+                f.write("EXECUTIVE SUMMARY\n")
+                f.write("="*70 + "\n\n")
+                f.write(synthesized_response)
+                f.write("\n\n")
+                f.write("="*70 + "\n")
+                f.write("AGENT RESPONSES\n")
+                f.write("="*70 + "\n\n")
+                
+                for i, resp in enumerate(agent_responses, 1):
+                    f.write(f"{i}. {resp.get('agent', 'Unknown').upper()}\n")
+                    f.write("-"*70 + "\n")
+                    if resp.get("success"):
+                        f.write(f"Summary: {resp.get('data', {}).get('summary', 'N/A')}\n")
+                    else:
+                        f.write(f"Error: {resp.get('error', 'Unknown')}\n")
+                    f.write("\n")
+            
+            return txt_path.exists()
+        except Exception as e:
+            if self.verbose:
+                print(f"✗ Text generation error: {e}")
             return False
 
-    def _generate_excel_report(
-        self,
-        filepath: Path,
-        query: str,
-        agent_responses: List[Dict[str, Any]],
-        synthesized_response: str,
-    ) -> bool:
-        """
-        Generate Excel report with multiple sheets
-
-        Args:
-            filepath: Output file path
-            query: User query
-            agent_responses: Agent responses
-            synthesized_response: Synthesized text
-
-        Returns:
-            Success boolean
-        """
+    def _generate_excel(self, filepath, query, agent_responses, synthesized_response):
+        """Generate Excel report"""
         try:
             with pd.ExcelWriter(filepath, engine="openpyxl") as writer:
-                # Sheet 1: Summary
-                summary_data = {
-                    "Field": ["Generated", "Query", "Agents Used", "Successful Agents"],
-                    "Value": [
-                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        query,
-                        len(agent_responses),
-                        sum(1 for r in agent_responses if r.get("success", False)),
-                    ],
-                }
-                summary_df = pd.DataFrame(summary_data)
-                summary_df.to_excel(writer, sheet_name="Summary", index=False)
-
-                # Sheet 2: Synthesized Response
-                response_data = {
-                    "Section": ["Executive Summary"],
-                    "Content": [synthesized_response],
-                }
-                response_df = pd.DataFrame(response_data)
-                response_df.to_excel(writer, sheet_name="Analysis", index=False)
-
-                # Sheet 3: Agent Results
-                agent_data = []
-                for response in agent_responses:
-                    agent_data.append(
-                        {
-                            "Agent": response.get("agent", "Unknown").upper(),
-                            "Status": (
-                                "Success"
-                                if response.get("success", False)
-                                else "Failed"
-                            ),
-                            "Error": response.get("error", "N/A"),
-                            "Data Summary": str(response.get("data", "N/A"))[:500],
-                        }
-                    )
-
-                agents_df = pd.DataFrame(agent_data)
-                agents_df.to_excel(writer, sheet_name="Agent Results", index=False)
-
-                # Sheet 4: Data tables (if available)
-                # Extract tabular data from agent responses
-                for i, response in enumerate(agent_responses):
-                    if response.get("success") and response.get("data"):
-                        data = response["data"]
-                        agent_name = response.get("agent", f"Agent{i}")
-
-                        # Try to convert to DataFrame
-                        try:
-                            if isinstance(data, dict):
-                                # Look for list data that can be tabulated
-                                for key, value in data.items():
-                                    if (
-                                        isinstance(value, list)
-                                        and value
-                                        and isinstance(value[0], dict)
-                                    ):
-                                        df = pd.DataFrame(value)
-                                        sheet_name = f"{agent_name}_{key}"[
-                                            :31
-                                        ]  # Excel limit
-                                        df.to_excel(
-                                            writer, sheet_name=sheet_name, index=False
-                                        )
-                        except:
-                            pass  # Skip if conversion fails
-
-            return True
-
+                # Summary
+                pd.DataFrame({
+                    "Field": ["Generated", "Query", "Agents"],
+                    "Value": [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), query, len(agent_responses)]
+                }).to_excel(writer, sheet_name="Summary", index=False)
+                
+                # Agents
+                pd.DataFrame([{
+                    "Agent": r.get("agent", "Unknown"),
+                    "Status": "Success" if r.get("success") else "Failed",
+                    "Summary": str(r.get("data", {}).get("summary", ""))[:500]
+                } for r in agent_responses]).to_excel(writer, sheet_name="Agents", index=False)
+            
+            return filepath.exists()
         except Exception as e:
             if self.verbose:
-                print(f"✗ Excel generation error: {e}")
+                print(f"✗ Excel error: {e}")
             return False
-
-    def list_reports(self) -> Dict[str, Any]:
-        """
-        List all generated reports
-
-        Returns:
-            Dictionary with report listing
-        """
-        if self.verbose:
-            print(f"\n[Report Generator Agent] Listing reports...")
-
-        reports = []
-
-        for file_path in self.reports_directory.iterdir():
-            if file_path.is_file():
-                report_info = {
-                    "filename": file_path.name,
-                    "path": str(file_path),
-                    "size_bytes": file_path.stat().st_size,
-                    "size_mb": round(file_path.stat().st_size / (1024 * 1024), 3),
-                    "created": datetime.fromtimestamp(
-                        file_path.stat().st_mtime
-                    ).strftime("%Y-%m-%d %H:%M:%S"),
-                    "format": file_path.suffix.lower().replace(".", ""),
-                }
-                reports.append(report_info)
-
-        # Sort by creation time (newest first)
-        reports.sort(key=lambda x: x["created"], reverse=True)
-
-        return {
-            "total_reports": len(reports),
-            "reports": reports,
-            "directory": str(self.reports_directory),
-        }
-
-    def delete_report(self, filename: str) -> Dict[str, Any]:
-        """
-        Delete a specific report
-
-        Args:
-            filename: Name of the report file
-
-        Returns:
-            Result dictionary
-        """
-        filepath = self.reports_directory / filename
-
-        if not filepath.exists():
-            return {"success": False, "error": "Report not found"}
-
-        try:
-            filepath.unlink()
-            if self.verbose:
-                print(f"✓ Deleted report: {filename}")
-            return {"success": True, "filename": filename}
-        except Exception as e:
-            return {"success": False, "error": str(e)}
-
-    def clean_old_reports(self, days: int = 30) -> Dict[str, Any]:
-        """
-        Clean reports older than specified days
-
-        Args:
-            days: Age threshold in days
-
-        Returns:
-            Cleanup result dictionary
-        """
-        if self.verbose:
-            print(
-                f"\n[Report Generator Agent] Cleaning reports older than {days} days..."
-            )
-
-        threshold = datetime.now().timestamp() - (days * 24 * 60 * 60)
-        deleted_count = 0
-        deleted_files = []
-
-        for file_path in self.reports_directory.iterdir():
-            if file_path.is_file():
-                if file_path.stat().st_mtime < threshold:
-                    try:
-                        file_path.unlink()
-                        deleted_count += 1
-                        deleted_files.append(file_path.name)
-                    except Exception as e:
-                        if self.verbose:
-                            print(f"  ⚠ Could not delete {file_path.name}: {e}")
-
-        if self.verbose:
-            print(f"✓ Deleted {deleted_count} old report(s)")
-
-        return {
-            "deleted_count": deleted_count,
-            "deleted_files": deleted_files,
-            "threshold_days": days,
-        }
-
-    def get_report_path(self, filename: str) -> Optional[str]:
-        """
-        Get full path for a report file
-
-        Args:
-            filename: Report filename
-
-        Returns:
-            Full path string or None if not found
-        """
-        filepath = self.reports_directory / filename
-        return str(filepath) if filepath.exists() else None
 
 
 # Convenience function
-def get_report_generator_agent(verbose: bool = True) -> ReportGeneratorAgent:
-    """
-    Get instance of Report Generator Agent
-
-    Args:
-        verbose: Whether to enable verbose logging
-
-    Returns:
-        Initialized ReportGeneratorAgent instance
-    """
-    return ReportGeneratorAgent(verbose=verbose)
+def get_report_generator_agent(verbose: bool = True):
+    """Get report generator instance"""
+    return ProfessionalReportGenerator(verbose=verbose)
 
 
-# Test the agent
 if __name__ == "__main__":
-    print("=" * 70)
-    print("REPORT GENERATOR AGENT - TEST SUITE")
-    print("=" * 70)
-
-    # Initialize agent
+    print("="*60)
+    print("TESTING REPORT GENERATOR")
+    print("="*60)
+    
     agent = get_report_generator_agent(verbose=True)
-
-    # Test 1: Generate PDF report
-    print("\n" + "=" * 70)
-    print("TEST 1: Generate PDF Report")
-    print("=" * 70)
-
-    sample_query = "What are the market trends for Metformin?"
-    sample_responses = [
-        {
+    
+    result = agent.generate_report(
+        query="Test Query",
+        agent_responses=[{
             "agent": "iqvia",
             "success": True,
-            "data": {"drug_name": "Metformin", "market_size": 500, "cagr": 5.2},
-        },
-        {
-            "agent": "clinical_trials",
-            "success": True,
-            "data": {"total_trials": 145, "active_trials": 32},
-        },
-    ]
-    sample_synthesis = """
-    # Executive Summary
-    
-    Metformin shows strong market performance with $500M market size and 5.2% CAGR.
-    
-    ## Key Findings
-    - 145 clinical trials found, 32 currently active
-    - Strong research interest in repurposing opportunities
-    
-    ## Recommendations
-    - Consider lifecycle management strategies
-    - Explore new indications in oncology
-    """
-
-    pdf_result = agent.generate_report(
-        query=sample_query,
-        agent_responses=sample_responses,
-        synthesized_response=sample_synthesis,
-        report_format="pdf",
+            "data": {"summary": "Test summary", "drug_analyses": []}
+        }],
+        synthesized_response="This is a test report.",
+        report_format="pdf"
     )
-    print(json.dumps(pdf_result, indent=2))
-
-    # Test 2: Generate Excel report
-    print("\n" + "=" * 70)
-    print("TEST 2: Generate Excel Report")
-    print("=" * 70)
-
-    excel_result = agent.generate_report(
-        query=sample_query,
-        agent_responses=sample_responses,
-        synthesized_response=sample_synthesis,
-        report_format="excel",
-    )
-    print(json.dumps(excel_result, indent=2))
-
-    # Test 3: List reports
-    print("\n" + "=" * 70)
-    print("TEST 3: List All Reports")
-    print("=" * 70)
-
-    listing = agent.list_reports()
-    print(json.dumps(listing, indent=2))
-
-    # Test 4: Get report path
-    print("\n" + "=" * 70)
-    print("TEST 4: Get Report Path")
-    print("=" * 70)
-
-    if listing["reports"]:
-        first_report = listing["reports"][0]["filename"]
-        path = agent.get_report_path(first_report)
-        print(f"Report path: {path}")
-
-    print("\n✓ All Report Generator Agent tests completed!")
+    
+    print("\n" + "="*60)
+    print("RESULT:")
+    print(json.dumps(result, indent=2))
+    print("="*60)

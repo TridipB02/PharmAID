@@ -1,6 +1,6 @@
 """
 Pharma Agentic AI - Enhanced Streamlit Web Interface
-Main application file with improved visualizations and outputs
+Main application file with PROFESSIONAL PDF reports and visualizations
 """
 
 import json
@@ -29,7 +29,7 @@ st.set_page_config(
     initial_sidebar_state=UI_CONFIG["initial_sidebar_state"],
 )
 
-# Custom CSS
+# Custom CSS - Enhanced for professional look
 st.markdown(
     """
 <style>
@@ -38,6 +38,7 @@ st.markdown(
         color: #1f77b4;
         text-align: center;
         margin-bottom: 2rem;
+        font-weight: bold;
     }
     .query-box {
         background-color: #ffffff;
@@ -45,7 +46,8 @@ st.markdown(
         padding: 1.5rem;
         border-radius: 10px;
         margin-bottom: 1.5rem;
-        border: 1px solid #e0e0e0;
+        border: 2px solid #1f77b4;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .response-box {
         background-color: #ffffff;
@@ -53,6 +55,7 @@ st.markdown(
         padding: 1.5rem;
         border-radius: 10px;
         border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .agent-info {
         background-color: #e8f4f8;
@@ -66,6 +69,15 @@ st.markdown(
         width: 100%;
         background-color: #1f77b4;
         color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #155a8a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .metric-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -74,6 +86,23 @@ st.markdown(
         border-radius: 10px;
         text-align: center;
         margin: 0.5rem 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .success-banner {
+        background-color: #d4edda;
+        border: 2px solid #28a745;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-weight: bold;
+    }
+    .download-section {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        color: white;
     }
 </style>
 """,
@@ -101,7 +130,11 @@ def render_header():
         '<h1 class="main-header">💊 Pharma Agentic AI</h1>', unsafe_allow_html=True
     )
     st.markdown(
-        '<p style="text-align: center; color: #666;">Portfolio Planning Assistant - Drug Repurposing Intelligence</p>',
+        '<p style="text-align: center; color: #666; font-size: 1.1rem;">Portfolio Planning Assistant - Drug Repurposing Intelligence</p>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<p style="text-align: center; color: #999; font-size: 0.9rem;">✨ Now with Professional PDF Reports & Visual Analytics</p>',
         unsafe_allow_html=True,
     )
     st.markdown("---")
@@ -163,6 +196,7 @@ def render_sidebar():
     st.sidebar.subheader("🚀 System Status")
     st.sidebar.success("✅ Ollama Connected")
     st.sidebar.success("✅ Mock Data Loaded")
+    st.sidebar.success("✅ Professional PDF Ready")
     st.sidebar.info(f"Model: llama3.1:8b")
 
 
@@ -304,7 +338,7 @@ def render_response():
             )
             st.write("**Keywords:**", ", ".join(parsed.get("keywords", [])[:5]))
 
-    # ✨ NEW: ENHANCED VISUALIZATIONS SECTION
+    # Enhanced visualizations section
     render_visualizations(response)
 
     # Display response
@@ -314,25 +348,26 @@ def render_response():
         unsafe_allow_html=True,
     )
 
-    # Action buttons
+    # ENHANCED Action buttons section
     st.markdown("---")
+    st.markdown("### 📥 Export Options")
+    
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("📄 Generate PDF Report"):
-            generate_pdf_report(response)
+        if st.button("📄 Generate Professional PDF", use_container_width=True):
+            generate_professional_pdf_report(response)
 
     with col2:
-        if st.button("📊 Generate Excel Data"):
+        if st.button("📊 Generate Excel Data", use_container_width=True):
             generate_excel_report(response)
 
     with col3:
-        if st.button("🔄 New Query"):
+        if st.button("🔄 New Query", use_container_width=True):
             st.session_state.current_response = None
             st.rerun()
 
 
-# ✨ NEW FUNCTION: Enhanced Visualizations
 def render_visualizations(response: Dict):
     """Render enhanced visualizations for agent responses"""
     
@@ -432,23 +467,6 @@ def render_iqvia_charts(data: Dict):
             # Data table
             st.markdown("#### Detailed Market Metrics")
             st.dataframe(df, use_container_width=True)
-        
-        # Historical Trends
-        for drug in drug_analyses[:3]:  # Show trends for first 3 drugs
-            historical = drug.get("historical_data", [])
-            if historical:
-                st.markdown(f"#### {drug.get('drug_name')} - Historical Trend")
-                
-                trend_df = pd.DataFrame(historical)
-                if not trend_df.empty and "year" in trend_df.columns:
-                    fig_trend = px.line(
-                        trend_df,
-                        x="year",
-                        y="sales_usd_million",
-                        title=f"{drug.get('drug_name')} Sales Trend",
-                        markers=True
-                    )
-                    st.plotly_chart(fig_trend, use_container_width=True)
 
 
 def render_clinical_trials_charts(data: Dict):
@@ -474,45 +492,6 @@ def render_clinical_trials_charts(data: Dict):
             
             fig_phase.update_layout(title="Trials by Phase")
             st.plotly_chart(fig_phase, use_container_width=True)
-        
-        # Status Summary
-        status_summary = data.get("status_summary", {}).get("distribution", {})
-        
-        if status_summary:
-            st.markdown("#### Trial Status Distribution")
-            
-            statuses = list(status_summary.keys())
-            status_counts = [status_summary[s]["count"] for s in statuses]
-            
-            fig_status = px.bar(
-                x=statuses,
-                y=status_counts,
-                title="Trials by Status",
-                labels={"x": "Status", "y": "Number of Trials"},
-                color=status_counts,
-                color_continuous_scale="Viridis"
-            )
-            st.plotly_chart(fig_status, use_container_width=True)
-        
-        # Sponsor Analysis
-        sponsor_data = data.get("sponsor_analysis", {})
-        top_sponsors = sponsor_data.get("top_sponsors", [])
-        
-        if top_sponsors:
-            st.markdown("#### Top Sponsors")
-            
-            sponsor_df = pd.DataFrame(top_sponsors[:10])
-            
-            fig_sponsors = px.bar(
-                sponsor_df,
-                x="trial_count",
-                y="sponsor",
-                orientation="h",
-                title="Top 10 Sponsors by Trial Count",
-                color="trial_count",
-                color_continuous_scale="Blues"
-            )
-            st.plotly_chart(fig_sponsors, use_container_width=True)
         
         # Metrics cards
         col1, col2, col3 = st.columns(3)
@@ -577,69 +556,6 @@ def render_patent_charts(data: Dict):
                 color_continuous_scale="RdYlGn_r"
             )
             st.plotly_chart(fig_timeline, use_container_width=True)
-        
-        # Competitive Landscape - Top Assignees
-        competitive = data.get("competitive_landscape", {})
-        top_assignees = competitive.get("top_assignees", [])
-        
-        if top_assignees:
-            st.markdown("#### Competitive Filing Heatmap")
-            
-            assignee_df = pd.DataFrame(top_assignees[:10])
-            
-            fig_assignees = px.bar(
-                assignee_df,
-                x="patent_count",
-                y="assignee",
-                orientation="h",
-                title="Top Patent Holders",
-                color="patent_count",
-                color_continuous_scale="Reds"
-            )
-            st.plotly_chart(fig_assignees, use_container_width=True)
-        
-        # FTO Risk Assessment
-        fto = data.get("fto_assessment", {})
-        risk_level = fto.get("risk_level", "Unknown")
-        
-        st.markdown("#### Freedom to Operate Assessment")
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            risk_color = {
-                "Low": "🟢",
-                "Medium": "🟡",
-                "High": "🔴"
-            }.get(risk_level, "⚪")
-            
-            st.markdown(f"### {risk_color} {risk_level} Risk")
-        
-        with col2:
-            active_count = fto.get("active_patents_count", 0)
-            st.metric("Active Patents", active_count)
-        
-        with col3:
-            holders = fto.get("unique_patent_holders", 0)
-            st.metric("Patent Holders", holders)
-        
-        # Patent Status Distribution
-        detailed_patents = data.get("detailed_patents", [])
-        if detailed_patents:
-            status_counts = {}
-            for patent in detailed_patents:
-                status = patent.get("status", "Unknown")
-                status_counts[status] = status_counts.get(status, 0) + 1
-            
-            if status_counts:
-                fig_status = go.Figure(data=[go.Pie(
-                    labels=list(status_counts.keys()),
-                    values=list(status_counts.values()),
-                    hole=0.4
-                )])
-                
-                fig_status.update_layout(title="Patent Status Distribution")
-                st.plotly_chart(fig_status, use_container_width=True)
 
 
 def render_exim_charts(data: Dict):
@@ -682,78 +598,90 @@ def render_exim_charts(data: Dict):
                 yaxis_title="Trade Value (USD)"
             )
             st.plotly_chart(fig_trade, use_container_width=True)
+
+
+def generate_professional_pdf_report(response: Dict):
+    """Generate PROFESSIONAL PDF report with enhanced charts - UPDATED FUNCTION"""
+    with st.spinner("🎨 Generating professional PDF report with visualizations..."):
+        try:
+            # Import the ENHANCED report generator
+            from agents.report_generator_agent import get_report_generator_agent
             
-            # Trade Balance
-            st.markdown("#### Trade Balance by Drug")
+            # Initialize with verbose=False for cleaner UI
+            report_agent = get_report_generator_agent(verbose=False)
             
-            balance_colors = df_trade["Balance"].map({
-                "Net Exporter": "#2ecc71",
-                "Net Importer": "#e74c3c",
-                "Balanced": "#f39c12"
-            }).fillna("#95a5a6")
-            
-            fig_balance = go.Figure(data=[go.Bar(
-                x=df_trade["Drug"],
-                y=df_trade["Exports (USD)"] - df_trade["Imports (USD)"],
-                marker_color=balance_colors
-            )])
-            
-            fig_balance.update_layout(
-                title="Net Trade Position (Exports - Imports)",
-                xaxis_title="Drug",
-                yaxis_title="Net Balance (USD)"
+            # Generate the professional report
+            result = report_agent.generate_report(
+                query=response["query"],
+                agent_responses=response["agent_responses"],
+                synthesized_response=response["response"],
+                report_format="pdf",
             )
-            st.plotly_chart(fig_balance, use_container_width=True)
-        
-        # Top Trading Partners
-        for drug in drug_analyses[:3]:
-            partners = drug.get("top_trading_partners", [])
-            if partners:
-                st.markdown(f"#### {drug.get('drug_name')} - Top Trading Partners")
+
+            if result["success"]:
+                # Read the generated PDF
+                with open(result["filepath"], "rb") as f:
+                    pdf_data = f.read()
                 
-                partner_df = pd.DataFrame(partners[:10])
-                
-                fig_partners = px.bar(
-                    partner_df,
-                    x="total_value_usd",
-                    y="country",
-                    orientation="h",
-                    title=f"Top Partners for {drug.get('drug_name')}",
-                    color="total_value_usd",
-                    color_continuous_scale="Blues"
+                # Show success message with styling
+                st.markdown(
+                    '<div class="success-banner">✅ Professional PDF Report Generated Successfully!</div>',
+                    unsafe_allow_html=True
                 )
-                st.plotly_chart(fig_partners, use_container_width=True)
-
-
-def generate_pdf_report(response: Dict):
-    """Generate PDF report with enhanced charts"""
-    with st.spinner("Generating PDF report..."):
-        from agents.report_generator_agent import get_report_generator_agent
-
-        report_agent = get_report_generator_agent(verbose=False)
-        result = report_agent.generate_report(
-            query=response["query"],
-            agent_responses=response["agent_responses"],
-            synthesized_response=response["response"],
-            report_format="pdf",
-        )
-
-        if result["success"]:
-            with open(result["filepath"], "rb") as f:
+                
+                # Display metrics in styled cards
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("📦 File Size", f"{result['size_mb']} MB")
+                with col2:
+                    st.metric("⏱️ Generation Time", f"{result['generation_time']:.1f}s")
+                with col3:
+                    st.metric("📄 Format", "Professional PDF")
+                
+                # Download section with styling
+                st.markdown('<div class="download-section">', unsafe_allow_html=True)
+                st.markdown("### 📥 Download Your Report")
+                st.markdown("""
+                **Your report includes:**
+                - 📑 Professional cover page with metadata
+                - 📊 Executive summary with key insights
+                - 📈 Embedded charts and visualizations
+                - 📋 Detailed analysis by intelligence source
+                - 📚 Methodology appendix
+                """)
+                
+                # Download button
                 st.download_button(
-                    label="⬇️ Download PDF",
-                    data=f,
+                    label="📥 Download Professional PDF Report",
+                    data=pdf_data,
                     file_name=result["filename"],
                     mime="application/pdf",
+                    use_container_width=True,
                 )
-            st.success(f"✅ PDF generated! Size: {result['size_mb']} MB")
-        else:
-            st.error(f"❌ Error: {result.get('error', 'Unknown error')}")
+                st.markdown('</div>', unsafe_allow_html=True)
+                
+                st.info("💡 **Tip:** This PDF is publication-ready with professional formatting and embedded visualizations!")
+                
+            else:
+                st.error(f"❌ Error generating report: {result.get('error', 'Unknown error')}")
+                st.warning("💡 **Troubleshooting:** Check that reportlab and matplotlib are installed")
+                
+                with st.expander("🔧 Installation Instructions"):
+                    st.code("""
+pip install reportlab matplotlib seaborn
+
+# Or install all requirements:
+pip install -r requirements.txt
+                    """, language="bash")
+        
+        except Exception as e:
+            st.error(f"❌ Error: {str(e)}")
+            st.exception(e)
 
 
 def generate_excel_report(response: Dict):
     """Generate Excel report"""
-    with st.spinner("Generating Excel report..."):
+    with st.spinner("📊 Generating Excel report..."):
         from agents.report_generator_agent import get_report_generator_agent
 
         report_agent = get_report_generator_agent(verbose=False)
@@ -767,10 +695,11 @@ def generate_excel_report(response: Dict):
         if result["success"]:
             with open(result["filepath"], "rb") as f:
                 st.download_button(
-                    label="⬇️ Download Excel",
+                    label="⬇️ Download Excel Report",
                     data=f,
                     file_name=result["filename"],
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
                 )
             st.success(f"✅ Excel generated! Size: {result['size_mb']} MB")
         else:
@@ -808,13 +737,16 @@ def main():
     render_response()
     render_query_history()
 
-    # Footer
+    # Enhanced Footer
     st.markdown("---")
     st.markdown(
-        '<p style="text-align: center; color: #666; font-size: 0.9rem;">'
-        "Pharma Agentic AI v2.0 | Enhanced Visualizations | Powered by Ollama & CrewAI | "
-        f'Last Updated: {datetime.now().strftime("%Y-%m-%d")}'
-        "</p>",
+        """
+        <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+            <h3>Pharma Agentic AI v2.0 - Professional Edition</h3>
+            <p>✨ Enhanced Visualizations | 📄 Professional PDF Reports | 🚀 Powered by Ollama & CrewAI</p>
+            <p style="font-size: 0.9rem;">Last Updated: {}</p>
+        </div>
+        """.format(datetime.now().strftime("%Y-%m-%d")),
         unsafe_allow_html=True,
     )
 
