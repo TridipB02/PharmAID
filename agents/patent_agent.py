@@ -13,7 +13,7 @@ from typing import Any, Dict, List
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from utils.data_fetchers import PatentFetcher
+from utils.data_fetchers import EPOPatentFetcher
 
 
 class PatentAgent:
@@ -36,7 +36,7 @@ class PatentAgent:
             verbose: Whether to print detailed logs
         """
         self.verbose = verbose
-        self.fetcher = PatentFetcher(verbose=verbose)  # Pass verbose parameter
+        self.fetcher = EPOPatentFetcher(verbose=verbose)
 
         if self.verbose:
             print("✓ Patent Agent initialized")
