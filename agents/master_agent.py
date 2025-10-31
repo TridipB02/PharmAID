@@ -911,17 +911,13 @@ Example:
                     if key == "detailed_trials":
                         remaining_items = data[key][max_items:]
                         summaries = []
-                        for t in remaining_items[
-                            :10
-                        ]:  # Show up to 10 more as one-liners
-                            nct = t.get("nct_id", "N/A")
-                            phase = t.get("phase", "N/A")
-                            status = t.get("status", "N/A")
-                            sponsor = t.get("sponsor", "Unknown")[
-                                :30
-                            ]  # Truncate long names
-                            summaries.append(f"{nct} ({phase}, {sponsor}, {status})")
-                        truncated[f"{key}_summary"] = ", ".join(summaries)
+                        for p in remaining_items[:15]:  
+                            number = p.get('patent_number', 'N/A')
+                            expiry = p.get('expiry_date', 'N/A')[:4]  # Just year
+                            assignee = p.get('assignee', 'Unknown')[:30]
+                            status = p.get('status', 'Unknown')
+                            summaries.append(f"{number} ({status}, Expires {expiry}, {assignee})")
+                        truncated[f'{key}_summary'] = ", ".join(summaries)
 
                     elif key == "detailed_patents":
                         remaining_items = data[key][max_items:]
@@ -1275,12 +1271,30 @@ FORMAT:
 
 **Top 5 Patents - FULL DETAILS:**
 
-1. **US[patent_number]**: [title]
-   - Assignee: [assignee] | Grant: [grant_date]
+1. **[patent_number]**: [title]
+   - Assignee: [assignee] | Filing: [filing_date]
    - Expiry: [expiry_date] | Status: [status]
    - Years Left: [years_until_expiry]
 
-[Repeat for patents 2-5]
+2. **[patent_number]**: [title]
+   - Assignee: [assignee] | Filing: [filing_date]
+   - Expiry: [expiry_date] | Status: [status]
+   - Years Left: [years_until_expiry]
+
+3. **[patent_number]**: [title]
+   - Assignee: [assignee] | Filing: [filing_date]
+   - Expiry: [expiry_date] | Status: [status]
+   - Years Left: [years_until_expiry]
+
+4. **[patent_number]**: [title]
+   - Assignee: [assignee] | Filing: [filing_date]
+   - Expiry: [expiry_date] | Status: [status]
+   - Years Left: [years_until_expiry]
+
+5. **[patent_number]**: [title]
+   - Assignee: [assignee] | Filing: [filing_date]
+   - Expiry: [expiry_date] | Status: [status]
+   - Years Left: [years_until_expiry]
 
 **Remaining Patents (if detailed_patents_remaining > 0):**
 [Extract EXACTLY from detailed_patents_summary field - it contains real patent numbers and dates]

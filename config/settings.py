@@ -2,7 +2,11 @@
 """
 Configuration settings for Pharma Agentic AI System
 """
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Base directories
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,12 +33,17 @@ DATA_FILES = {
     "mock_iqvia": DATA_DIR / "mock_iqvia.json",
 }
 
+EPO_CONFIG = {
+    "consumer_key": os.getenv("EPO_CONSUMER_KEY", ""),
+    "consumer_secret": os.getenv("EPO_CONSUMER_SECRET", ""),
+    "base_url": "https://ops.epo.org/3.2/rest-services",
+     "auth_url": "https://ops.epo.org/3.2/auth/accesstoken",
+}
+
 # API Endpoints (Free sources)
 API_ENDPOINTS = {
     # Clinical Trials
     "clinical_trials": "https://clinicaltrials.gov/api/v2/studies",
-    # Patents - USPTO PatentsView
-    "uspto_patents": "mock",
     # PubMed for scientific literature
     "pubmed_search": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
     "pubmed_fetch": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi",
@@ -161,4 +170,5 @@ __all__ = [
     "REPORT_CONFIG",
     "UI_CONFIG",
     "TEST_QUERIES",
+    "EPO_CONFIG"
 ]

@@ -42,7 +42,7 @@ class PatentAgent:
             print("✓ Patent Agent initialized")
 
     def search_patents(
-        self, drugs: List[str] = None, keywords: List[str] = None, max_results: int = 20
+        self, drugs: List[str] = None, keywords: List[str] = None, max_results: int = 30
     ) -> Dict[str, Any]:
         """
         Comprehensive patent search and landscape analysis

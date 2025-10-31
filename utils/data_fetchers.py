@@ -5,10 +5,9 @@ Handles loading mock data and fetching from real APIs
 """
 
 import json
-
-# Import settings
 import sys
 import time
+import base64
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -277,27 +276,107 @@ class PubMedFetcher(DataFetcher):
             return []
 
 
-class PatentFetcher(DataFetcher):
-    """Fetches patent data using Google Patents Public Search"""
 
+class EPOPatentFetcher(DataFetcher):
+    """Fetches patent data from EPO Open Patent Services API"""
+    
     def __init__(self, verbose: bool = False):
         super().__init__()
         self.verbose = verbose
-        self.max_retries = 2
-        self.timeout = 15
-
-        # Patent term rules
-        self.patent_terms = {"utility": 20, "design": 15, "plant": 20, "reissue": 20}
-
+        
+        # Import here to avoid circular import
+        from config.settings import EPO_CONFIG
+        
+        self.consumer_key = EPO_CONFIG['consumer_key']
+        self.consumer_secret = EPO_CONFIG['consumer_secret']
+        self.base_url = EPO_CONFIG['base_url']
+        self.auth_url = EPO_CONFIG['auth_url']
+        
+        self.access_token = None
+        self.token_expiry = None
+        
+        # Rate limiting (30 req/min for registered users)
+        self.min_request_interval = 2.0  # 30 requests/minute
+        
+        if self.consumer_key and self.consumer_secret:
+            self._authenticate()
+            if self.verbose:
+                print("✓ EPO Patent Fetcher initialized (Authenticated)")
+        else:
+            if self.verbose:
+                print("⚠ EPO keys not found - using anonymous access (10 req/min)")
+                print("  Set EPO_CONSUMER_KEY and EPO_CONSUMER_SECRET in .env")
+    
+    def _authenticate(self):
+        """Authenticate with EPO OPS API"""
+        try:
+            # Create Basic Auth header
+            credentials = f"{self.consumer_key}:{self.consumer_secret}"
+            encoded_credentials = base64.b64encode(credentials.encode()).decode()
+            
+            headers = {
+                'Authorization': f'Basic {encoded_credentials}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            
+            data = {'grant_type': 'client_credentials'}
+            
+            response = requests.post(
+                self.auth_url,
+                headers=headers,
+                data=data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                token_data = response.json()
+                self.access_token = token_data.get('access_token')
+                expires_in = token_data.get('expires_in', 3600)
+                
+                from datetime import datetime, timedelta
+                self.token_expiry = datetime.now() + timedelta(seconds=expires_in - 60)
+                
+                # Update session headers
+                self.session.headers.update({
+                    'Authorization': f'Bearer {self.access_token}'
+                })
+                
+                if self.verbose:
+                    print(f"  ✓ EPO authenticated - token expires in {expires_in}s")
+                
+                return True
+            else:
+                if self.verbose:
+                    print(f"  ✗ Authentication failed: {response.status_code}")
+                return False
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"  ✗ Authentication error: {e}")
+            return False
+    
+    def _check_token_expiry(self):
+        """Check if token needs refresh"""
+        from datetime import datetime
+        
+        if not self.access_token:
+            return False
+        
+        if self.token_expiry and datetime.now() >= self.token_expiry:
+            if self.verbose:
+                print("  Token expired, re-authenticating...")
+            return self._authenticate()
+        
+        return True
+    
     def search_patents(self, query: str, max_results: int = 10) -> List[Dict]:
         """
-        Search patents using a simple heuristic approach
-        Returns mock-like structured data for demonstration
-
+        Search patents using EPO OPS API
+        
         Args:
-            query: Patent search query (drug name)
-            max_results: Maximum results (limited to 10)
-
+            query: Search query (drug name or keyword)
+            max_results: Maximum number of results
+        
         Returns:
             List of patent dictionaries
         """
@@ -305,41 +384,144 @@ class PatentFetcher(DataFetcher):
             if self.verbose:
                 print("❌ Empty query provided")
             return []
-
+        
+        # Check authentication
+        if self.consumer_key and self.consumer_secret:
+            self._check_token_expiry()
+        
         if self.verbose:
-            print(f"⚠ Using mock patent data (Patent APIs require authentication)")
-
-        # Generate structured mock patents based on query
-        patents = self._generate_mock_patents(query, max_results)
-
-        if self.verbose:
-            print(f"✓ Generated {len(patents)} mock patents for demonstration")
-
+            print(f"[EPO Patent Search] Query: {query}")
+        
+        try:
+            # EPO OPS search endpoint
+            search_url = f"{self.base_url}/published-data/search"
+            
+            # Build query (search in title and abstract)
+            params = {
+                'q': f'ti="{query}" OR ab="{query}"',
+                'Range': f'1-{min(max_results, 100)}'
+            }
+            
+            self._rate_limit()
+            
+            response = self.session.get(
+                search_url,
+                params=params,
+                headers={'Accept': 'application/json'},
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                patents = self._parse_epo_response(response.json())
+                
+                if self.verbose:
+                    print(f"  ✓ Found {len(patents)} patents from EPO")
+                
+                return patents[:max_results]
+            
+            elif response.status_code == 404:
+                if self.verbose:
+                    print(f"  No patents found for: {query}")
+                return []
+            
+            else:
+                if self.verbose:
+                    print(f"  ⚠ EPO returned status {response.status_code}")
+                # Fallback to mock data
+                return self._generate_mock_patents(query, max_results)
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"  ✗ EPO search error: {e}")
+            # Fallback to mock data
+            return self._generate_mock_patents(query, max_results)
+    
+    def _parse_epo_response(self, data: Dict) -> List[Dict]:
+        """Parse EPO OPS API response"""
+        patents = []
+        
+        try:
+            # EPO response structure varies, adapt as needed
+            results = data.get('ops:world-patent-data', {}).get('ops:biblio-search', {}).get('ops:search-result', {}).get('ops:publication-reference', [])
+            
+            if not isinstance(results, list):
+                results = [results]
+            
+            for result in results:
+                patent = self._parse_epo_patent(result)
+                if patent:
+                    patents.append(patent)
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"  ⚠ Parse error: {e}")
+        
         return patents
-
+    
+    def _parse_epo_patent(self, result: Dict) -> Optional[Dict]:
+        """Parse individual EPO patent result"""
+        try:
+            document = result.get('document-id', {})
+            
+            patent_number = document.get('doc-number', {}).get('$', 'N/A')
+            country = document.get('country', {}).get('$', 'N/A')
+            kind = document.get('kind', {}).get('$', '')
+            
+            full_number = f"{country}{patent_number}{kind}"
+            
+            # Get dates
+            date = document.get('date', {}).get('$', 'N/A')
+            
+            # Calculate expiry (20 years from filing for utility patents)
+            from datetime import datetime, timedelta
+            try:
+                filing_dt = datetime.strptime(date, '%Y%m%d')
+                expiry_dt = filing_dt + timedelta(days=20*365)
+                expiry_date = expiry_dt.strftime('%Y-%m-%d')
+                filing_date = filing_dt.strftime('%Y-%m-%d')
+            except:
+                filing_date = date
+                expiry_date = 'N/A'
+            
+            # Determine status
+            current_year = datetime.now().year
+            try:
+                expiry_year = int(expiry_date.split('-')[0])
+                status = 'Active' if expiry_year > current_year else 'Expired'
+            except:
+                status = 'Unknown'
+            
+            return {
+                'patent_number': full_number,
+                'title': 'Title retrieval requires additional EPO call',
+                'filing_date': filing_date,
+                'grant_date': filing_date,
+                'expiry_date': expiry_date,
+                'assignee': 'Assignee retrieval requires additional EPO call',
+                'status': status,
+                'patent_type': 'utility',
+                'claims_count': 'N/A'
+            }
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"  ⚠ Parse patent error: {e}")
+            return None
+    
     def _generate_mock_patents(self, query: str, count: int) -> List[Dict]:
-        """Generate structured mock patent data"""
+        """Generate mock patent data (same as before)"""
         import random
         from datetime import datetime
-
+        
         patents = []
         current_year = datetime.now().year
-
-        # Common pharmaceutical companies
+        
         assignees = [
-            "Pfizer Inc.",
-            "Johnson & Johnson",
-            "Novartis AG",
-            "Roche Holding AG",
-            "Merck & Co.",
-            "GlaxoSmithKline",
-            "Sanofi",
-            "AstraZeneca",
-            "Bristol-Myers Squibb",
-            "Eli Lilly",
+            "Pfizer Inc.", "Johnson & Johnson", "Novartis AG",
+            "Roche Holding AG", "Merck & Co.", "GlaxoSmithKline",
+            "Sanofi", "AstraZeneca", "Bristol-Myers Squibb", "Eli Lilly"
         ]
-
-        # Patent title templates
+        
         title_templates = [
             f"Pharmaceutical composition comprising {query}",
             f"Methods of treating diseases using {query}",
@@ -350,44 +532,41 @@ class PatentFetcher(DataFetcher):
             f"Process for preparing {query} pharmaceutical composition",
             f"{query}-based drug delivery system",
             f"Oral dosage form of {query}",
-            f"Injectable formulation containing {query}",
+            f"Injectable formulation containing {query}"
         ]
-
+        
         for i in range(min(count, 10)):
-            # Generate patent details
             grant_year = random.randint(2005, 2023)
-            grant_date = (
-                f"{grant_year}-{random.randint(1,12):02d}-{random.randint(1,28):02d}"
-            )
+            grant_date = f"{grant_year}-{random.randint(1,12):02d}-{random.randint(1,28):02d}"
             filing_year = grant_year - random.randint(2, 4)
-            filing_date = (
-                f"{filing_year}-{random.randint(1,12):02d}-{random.randint(1,28):02d}"
-            )
-
-            # Calculate expiry (20 years from grant)
-            expiry_year = grant_year + 20
-            expiry_date = (
-                f"{expiry_year}-{random.randint(1,12):02d}-{random.randint(1,28):02d}"
-            )
-
-            # Determine status
-            status = "Active" if expiry_year > current_year else "Expired"
-
+            filing_date = f"{filing_year}-{random.randint(1,12):02d}-{random.randint(1,28):02d}"
+            
+            expiry_year = filing_year + 20
+            expiry_date = f"{expiry_year}-{random.randint(1,12):02d}-{random.randint(1,28):02d}"
+            
+            status = 'Active' if expiry_year > current_year else 'Expired'
+            
             patent = {
-                "patent_number": f"US{random.randint(7000000, 11000000)}B2",
-                "title": random.choice(title_templates),
-                "filing_date": filing_date,
-                "grant_date": grant_date,
-                "expiry_date": expiry_date,
-                "assignee": random.choice(assignees),
-                "status": status,
-                "patent_type": "utility",
-                "claims_count": str(random.randint(10, 50)),
+                'patent_number': f"EP{random.randint(1000000, 3000000)}B1",
+                'title': random.choice(title_templates),
+                'filing_date': filing_date,
+                'grant_date': grant_date,
+                'expiry_date': expiry_date,
+                'assignee': random.choice(assignees),
+                'status': status,
+                'patent_type': 'utility',
+                'claims_count': str(random.randint(10, 50))
             }
-
+            
             patents.append(patent)
-
+        
         return patents
+
+
+# Update the convenience function at the bottom
+def get_patent_fetcher() -> EPOPatentFetcher:
+    """Get instance of EPO Patent Fetcher"""
+    return EPOPatentFetcher()
 
 
 class OpenFDAFetcher(DataFetcher):
@@ -757,9 +936,9 @@ def get_pubmed_fetcher() -> PubMedFetcher:
     return PubMedFetcher()
 
 
-def get_patent_fetcher() -> PatentFetcher:
+def get_patent_fetcher() -> EPOPatentFetcher:
     """Get instance of PatentFetcher"""
-    return PatentFetcher()
+    return EPOPatentFetcher()
 
 
 def get_openfda_fetcher() -> OpenFDAFetcher:
@@ -785,19 +964,19 @@ def get_world_bank_fetcher() -> WorldBankTradeFetcher:
 # Test functions
 if __name__ == "__main__":
     print("Testing Data Fetchers...")
-
+    
     # Test Mock Data
     print("\n1. Testing Mock Data Fetcher:")
     mock_fetcher = get_mock_data_fetcher()
     drug_info = mock_fetcher.get_drug_info("Metformin")
     print(f"Drug Info: {drug_info}")
-
+    
     market_data = mock_fetcher.get_iqvia_market_data("Metformin")
     print(f"Market Data: {market_data}")
-
+    
     cagr = mock_fetcher.calculate_cagr("Metformin")
     print(f"CAGR: {cagr}%")
-
+    
     # Test Clinical Trials
     print("\n2. Testing Clinical Trials API:")
     ct_fetcher = get_clinical_trials_fetcher()
@@ -807,11 +986,36 @@ if __name__ == "__main__":
     print(f"Found {len(trials)} trials")
     if trials:
         print(f"First trial: {trials[0]['title']}")
-
+    
+    #Test EPO Patent Fetcher
+    print("\n3. Testing EPO Patent Fetcher:")
+    print("="*60)
+    patent_fetcher = get_patent_fetcher()
+    print(f"\nSearching patents for 'Aspirin'...")
+    patents = patent_fetcher.search_patents("Aspirin", max_results=5)
+    print(f"\nFound {len(patents)} patents")
+    
+    if patents:
+        print("\nFirst 3 patents:")
+        for i, patent in enumerate(patents[:3], 1):
+            print(f"\n{i}. Patent Number: {patent['patent_number']}")
+            print(f"   Title: {patent['title'][:80]}...")
+            print(f"   Assignee: {patent['assignee']}")
+            print(f"   Filing Date: {patent['filing_date']}")
+            print(f"   Expiry Date: {patent['expiry_date']}")
+            print(f"   Status: {patent['status']}")
+        if len(patents) > 5:
+            print(f"\nRemaining {len(patents) - 5} patents (summary):")
+            for i, patent in enumerate(patents[5:], 6):
+                print(f"{i}. {patent['patent_number']} ({patent['status']}, Expires {patent['expiry_date'][:4]}, {patent['assignee'][:30]})")
+    else:
+        print("⚠ No patents found (EPO might be failing)")
+    
     # Test PubMed
-    print("\n3. Testing PubMed API:")
+    print("\n4. Testing PubMed API:")
     pubmed_fetcher = get_pubmed_fetcher()
     publications = pubmed_fetcher.search_publications("Metformin cancer", max_results=3)
     print(f"Found {len(publications)} publications")
-
-    print("\nAll tests completed!")
+    
+    print("\n" + "="*60)
+    print("All tests completed!")
