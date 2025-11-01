@@ -41,19 +41,60 @@ class PatentAgent:
         if self.verbose:
             print("✓ Patent Agent initialized")
 
+    def _filter_keywords(self, keywords: List[str]) -> List[str]:
+        """
+        Filter out generic/useless keywords that pollute patent searches
+        Args:
+            keywords: List of raw keywords from query parser
+        Returns:
+             Filtered list of meaningful keywords
+        """
+
+        skip_keywords = [
+            # Generic words
+            'patents', 'patent', 'recent', 'expiring', 'space', 'area', 'field',
+            'search', 'find', 'get', 'show', 'list', 'top', 'best',
+        
+            # Action words
+            'repurposed', 'novel', 'new', 'innovative', 'advanced',
+            'companies', 'jointly', 'filed', 'have', 'that', 'could',
+            'would', 'should', 'might', 'for', 'with', 'and', 'or',
+        
+            # Question words
+            'what', 'which', 'who', 'where', 'when', 'how', 'why',
+        
+            # Meta terms
+            'related', 'referencing', 'about', 'regarding', 'concerning'
+        ]
+
+        good_keywords = []
+        for keyword in keywords:
+            if keyword.lower() in skip_keywords:
+                continue
+            if len(keyword) < 4:
+                continue
+
+            words = keyword.lower().split()
+            if len(words) > 1 and all(word in skip_keywords for word in words):
+                continue
+
+            words = keyword.lower().split()
+            if len(words) > 1 and all(word in skip_keywords for word in words):
+                continue
+
+            good_keywords.append(keyword)
+
+        if not good_keywords and keywords:
+            good_keywords = keywords[:2]
+        
+        return good_keywords
+
+
     def search_patents(
         self, drugs: List[str] = None, keywords: List[str] = None, max_results: int = 30
     ) -> Dict[str, Any]:
         """
         Comprehensive patent search and landscape analysis
-
-        Args:
-            drugs: List of drug names to search
-            keywords: Additional keywords for search
-            max_results: Maximum number of patents to retrieve
-
-        Returns:
-            Dictionary with patent analysis results
         """
         if self.verbose:
             print(f"\n[Patent Agent] Searching patents...")
@@ -89,14 +130,19 @@ class PatentAgent:
 
         # Search by keywords
         if keywords:
-            for keyword in keywords:
+            filtered_keywords = self._filter_keywords(keywords)
+
+            if self.verbose:
+                print(f"  Keywords (filtered): {filtered_keywords}")
+
+            for keyword in filtered_keywords:
                 patents = self.fetcher.search_patents(keyword, max_results=max_results)
                 if patents:
                     all_patents.extend(patents)
 
                     if self.verbose:
                         print(f"  Found {len(patents)} patents for keyword: {keyword}")
-
+                
         # Remove duplicates based on patent number
         unique_patents = {p["patent_number"]: p for p in all_patents}.values()
         results["detailed_patents"] = list(unique_patents)
