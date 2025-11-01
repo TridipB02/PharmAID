@@ -867,8 +867,12 @@ Example:
 
     def _truncate_agent_data(self, data: Dict, max_items: int = 5) -> Dict:
         """
-        Truncate large arrays to show only top N items
-        Reduces tokens sent to LLM by ~60%
+        Truncate large arrays to show only top N items with SMART summary
+
+        Strategy:
+        - Show FULL details for first 5 items
+        - Create REAL one-line summaries for remaining items
+        - Keep ALL data for visualizations (don't remove anything)
 
         Args:
             data: Agent response data
@@ -907,71 +911,96 @@ Example:
                     truncated[f"{key}_showing"] = max_items
                     truncated[f"{key}_remaining"] = original_count - max_items
 
-                    # Create REAL summary from actual remaining data
-                    if key == "detailed_trials":
-                        remaining_items = data[key][max_items:]
-                        summaries = []
-                        for p in remaining_items[:15]:  
-                            number = p.get('patent_number', 'N/A')
-                            expiry = p.get('expiry_date', 'N/A')[:4]  # Just year
-                            assignee = p.get('assignee', 'Unknown')[:30]
-                            status = p.get('status', 'Unknown')
-                            summaries.append(f"{number} ({status}, Expires {expiry}, {assignee})")
-                        truncated[f'{key}_summary'] = ", ".join(summaries)
-
-                    elif key == "detailed_patents":
-                        remaining_items = data[key][max_items:]
-                        summaries = []
-                        for p in remaining_items[
-                            :10
-                        ]:  # Show up to 10 more as one-liners
-                            number = p.get("patent_number", "N/A")
-                            expiry = p.get("expiry_date", "N/A")[:4]  # Just year
-                            assignee = p.get("assignee", "Unknown")[:30]
-                            status = p.get("status", "Unknown")
-                            summaries.append(
-                                f"{number} ({status}, Expires {expiry}, {assignee})"
-                            )
-                        truncated[f"{key}_summary"] = ", ".join(summaries)
-
-                    elif key == "detailed_publications":
-                        remaining_items = data[key][max_items:]
-                        summaries = []
-                        for p in remaining_items[
-                            :10
-                        ]:  # Show up to 10 more as one-liners
-                            pmid = p.get("pmid", "N/A")
-                            year = p.get("year", "N/A")
-                            journal = p.get("journal", "Unknown")[:40]
-                            summaries.append(f"PMID{pmid} ({year}, {journal})")
-                        truncated[f"{key}_summary"] = ", ".join(summaries)
-
-                    elif key == "trade_records":
-                        remaining_items = data[key][max_items:]
-                        summaries = []
-                        for r in remaining_items[:10]:
-                            partner = r.get("partner", "Unknown")
-                            value = r.get("value_usd", 0)
-                            flow = r.get("flow", "N/A")
-                            summaries.append(f"{partner} (${value:,.0f}, {flow})")
-                        truncated[f"{key}_summary"] = ", ".join(summaries)
-
-                    elif key == "world_bank_indicators":
-                        remaining_items = data[key][max_items:]
-                        summaries = []
-                        for ind in remaining_items[:10]:
-                            year = ind.get("year", "N/A")
-                            country = ind.get("country", "Unknown")
-                            value = ind.get("value", 0)
-                            summaries.append(f"{year}: {country} (${value:,.0f}B)")
-                        truncated[f"{key}_summary"] = ", ".join(summaries)
+                    # Create SMART summary from remaining items
+                    remaining_items = data[key][max_items:]
+                    summary = self._create_smart_summary(key, remaining_items)
+                    truncated[f"{key}_summary"] = summary
 
                     if self.verbose:
-                        print(
-                            f"  Truncated {key}: showing {max_items}/{original_count}"
-                        )
-
+                        print(f"  Truncated {key}: showing {max_items}/{original_count}")
+                        print(f"    Summary created for {len(remaining_items)} items")
         return truncated
+
+    def _create_smart_summary(self, data_type: str, items: List[Dict]) -> str:
+        """
+        Create intelligent one-line summaries for remaining items
+
+        Args:
+            data_type: Type of data (detailed_patents, detailed_trials, etc.)
+            items: List of remaining items to summarize
+
+        Returns:
+            Smart summary string
+        """
+        if not items:
+            return ""       
+        try:
+            if data_type == "detailed_patents":
+                summaries = []
+                for patent in items[:15]:
+                    num = patent.get('patent_number', 'N/A')
+                    status = patent.get('status', 'Unknown')
+                    expiry = patent.get('expiry_date', 'N/A')[:4]  # Just year
+                    assignee = patent.get('assignee', 'Unknown')[:30]  # First 30 chars
+
+                    summaries.append(f"{num} ({status}, Exp: {expiry}, {assignee})")
+
+                return " | ".join(summaries)
+            
+            elif data_type == "detailed_trials":
+                summaries = []
+                for trial in items[:15]:
+                    nct = trial.get('nct_id', 'N/A')
+                    phase = trial.get('phase', 'N/A')
+                    status = trial.get('status', 'Unknown')
+                    sponsor = trial.get('sponsor', 'Unknown')[:30]
+
+                    summaries.append(f"{nct} (Phase: {phase}, {status}, {sponsor})")
+
+                return " | ".join(summaries)
+            
+            elif data_type == "detailed_publications":
+                summaries = []
+                for pub in items[:15]:
+                    pmid = pub.get('pmid', 'N/A')
+                    year = pub.get('year', 'N/A')
+                    journal = pub.get('journal', 'Unknown')[:40]
+                
+                    summaries.append(f"PMID{pmid} ({year}, {journal})")
+
+                return " | ".join(summaries)
+            
+            elif data_type == "trade_records":
+                summaries = []
+                for record in items[:15]:
+                    partner = record.get('partner', 'Unknown')
+                    value = record.get('value_usd', 0)
+                    flow = record.get('flow', 'N/A')
+                
+                    summaries.append(f"{partner} (${value:,.0f}, {flow})")
+
+                return " | ".join(summaries)
+            
+            elif data_type == "drug_analyses":
+                summaries = []
+                for drug in items[:10]:
+                    name = drug.get('drug_name', 'Unknown')
+                    metrics = drug.get('market_metrics', {})
+                    sales = metrics.get('current_sales_usd_million', 0)
+                    cagr = metrics.get('cagr_percent', 0)
+                
+                    summaries.append(f"{name} (${sales}M, CAGR: {cagr}%)")
+
+                return " | ".join(summaries)
+            
+            else:
+                return f"{len(items)} additional items (details available in visualizations)"
+            
+        except Exception as e:
+            if self.verbose:
+                print(f"  ⚠ Summary creation error: {e}")
+            return f"{len(items)} additional items"
+
 
     def execute_tasks(self, tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -1140,12 +1169,11 @@ Example:
         parsed_query: Dict[str, Any],
     ) -> str:
         """
-        OPTIMIZED synthesis - shows top 5 detailed + summary for rest
-        Faster response generation with cleaner output
+        OPTIMIZED synthesis with TOP 5 detailed + smart summaries
         """
         if self.verbose:
             print(f"\n{'='*60}")
-            print(f"RESPONSE SYNTHESIS (OPTIMIZED)")
+            print(f"RESPONSE SYNTHESIS (TOP 5 STRATEGY)")
             print(f"{'='*60}")
 
         if not agent_responses:
@@ -1163,7 +1191,7 @@ Example:
             )
             return f"All agents failed:\n{error_summary}"
 
-        # ⚡ OPTIMIZATION: Truncate data before formatting
+        # OPTIMIZATION: Truncate data before formatting
         compiled_data = []
         for response in successful_responses:
             agent_name = response["agent"].upper()
@@ -1180,7 +1208,7 @@ Example:
                 f"\n### {agent_name} AGENT\n{task_desc}\n{formatted_data}"
             )
 
-        # ⚡ OPTIMIZED SYNTHESIS PROMPT - Shorter and more focused
+        # OPTIMIZED SYNTHESIS PROMPT - Shorter and more focused
         synthesis_prompt = f"""You are a pharmaceutical analyst. Create a structured report from this data.
 
 QUERY: "{original_query}"
@@ -1188,14 +1216,15 @@ QUERY: "{original_query}"
 DATA FROM AGENTS:
 {''.join(compiled_data)}
 
-🎯 CRITICAL RULES:
+🎯 CRITICAL DISPLAY RULES - TOP 5 STRATEGY:
 
-1. **Top 5 Rule**: Show FULL DETAILS for first 5 items, then ONE-LINE summary for rest
-2. **No Placeholders**: NEVER write "[Continue listing...]" or "[Full details for...]"
-3. **Real Data Only**: Extract ACTUAL values from fields (drug_name, current_sales_usd_million, nct_id, etc.)
-4. **Summary Format for items 6+**: Extract from the _summary fields provided - these contain REAL data from API
-5. **Only show sections with data**: Skip sections where no data exists
-6.**Check which agents actually ran:**
+1. **Top 5 Detailed Rule**: Show FULL DETAILS for first 5 items ONLY
+2. **Remaining Items Rule**: For items 6+, show ONE-LINE summary from the _summary field
+3. **No Placeholders**: NEVER write "[Continue listing...]" or "[Show more...]"
+4. **Real Data Only**: Extract ACTUAL values from fields (drug_name, nct_id, patent_number, etc.)
+5. **Summary Format**: Use the _summary fields - they contain REAL one-line summaries from API data
+6. **Total Count**: Always mention total (e.g., "Showing 5 of 30 patents")
+7.**Check which agents actually ran:**
 - Look at the "### AGENT_NAME AGENT" headers in the data above
 - ONLY create sections for agents that appear in the data
 - If an agent is NOT in the data above, DO NOT create that section
@@ -1264,9 +1293,7 @@ FORMAT:
 
 ---
 
-### 📜 Patents
-[ONLY IF "PATENT AGENT" appears in data above]
-[If Patent not present: SKIP THIS ENTIRE SECTION]
+### 📜 Patents (if PATENT AGENT ran)
 **Stats:** Total: [total_patents_found] | Expiring Soon: [expiring_soon_count] | FTO Risk: [risk_level]
 
 **Top 5 Patents - FULL DETAILS:**
@@ -1281,23 +1308,11 @@ FORMAT:
    - Expiry: [expiry_date] | Status: [status]
    - Years Left: [years_until_expiry]
 
-3. **[patent_number]**: [title]
-   - Assignee: [assignee] | Filing: [filing_date]
-   - Expiry: [expiry_date] | Status: [status]
-   - Years Left: [years_until_expiry]
+[Repeat for patents 3-5]
 
-4. **[patent_number]**: [title]
-   - Assignee: [assignee] | Filing: [filing_date]
-   - Expiry: [expiry_date] | Status: [status]
-   - Years Left: [years_until_expiry]
+**Remaining Patents ([detailed_patents_remaining] patents):**
+[Extract EXACTLY from detailed_patents_summary field - ONE LINE with patent numbers, status, expiry]
 
-5. **[patent_number]**: [title]
-   - Assignee: [assignee] | Filing: [filing_date]
-   - Expiry: [expiry_date] | Status: [status]
-   - Years Left: [years_until_expiry]
-
-**Remaining Patents (if detailed_patents_remaining > 0):**
-[Extract EXACTLY from detailed_patents_summary field - it contains real patent numbers and dates]
 
 ---
 
@@ -1347,8 +1362,7 @@ Write the report now:"""
             synthesized = response.content
 
             if self.verbose:
-                print(f"✓ Response synthesized")
-
+                print(f"✓ Response synthesized with TOP 5 strategy")
             return synthesized
 
         except Exception as e:
