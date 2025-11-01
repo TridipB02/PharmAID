@@ -1216,15 +1216,14 @@ QUERY: "{original_query}"
 DATA FROM AGENTS:
 {''.join(compiled_data)}
 
-🎯 CRITICAL DISPLAY RULES - TOP 5 STRATEGY:
+🎯 CRITICAL DISPLAY RULES:
 
-1. **Top 5 Detailed Rule**: Show FULL DETAILS for first 5 items ONLY
-2. **Remaining Items Rule**: For items 6+, show ONE-LINE summary from the _summary field
-3. **No Placeholders**: NEVER write "[Continue listing...]" or "[Show more...]"
-4. **Real Data Only**: Extract ACTUAL values from fields (drug_name, nct_id, patent_number, etc.)
-5. **Summary Format**: Use the _summary fields - they contain REAL one-line summaries from API data
-6. **Total Count**: Always mention total (e.g., "Showing 5 of 30 patents")
-7.**Check which agents actually ran:**
+1. **Top 5 Rule**: Show FULL DETAILS for items 1-5 ONLY
+2. **Summary Rule**: For items 6+, look for the _summary field and display it VERBATIM (don't add brackets)
+3. **No Placeholders**: NEVER write "[Extract from...]" - use actual data or write "No additional details available"
+4. **Real Data**: Extract ACTUAL field values like patent_number, nct_id, pmid
+5. **Check Existence**: Only show sections if that agent's data appears above
+6.**Check which agents actually ran:**
 - Look at the "### AGENT_NAME AGENT" headers in the data above
 - ONLY create sections for agents that appear in the data
 - If an agent is NOT in the data above, DO NOT create that section
@@ -1275,8 +1274,8 @@ FORMAT:
 1. **NCT[nct_id]**: [title]
    - Phase: [phase] | Status: [status]
    - Sponsor: [sponsor]
-   - Interventions: [List ALL from interventions array]
-   - Conditions: [List ALL from conditions array]
+   - Interventions: [interventions]
+   - Conditions: [conditions]
    - Timeline: [start_date] to [completion_date]
 
 2. **NCT[nct_id]**: [title]
@@ -1284,41 +1283,37 @@ FORMAT:
    - Sponsor: [sponsor]
    - Interventions: [interventions]
    - Conditions: [conditions]
-   - Timeline: [dates]
+   - Timeline: [start_date] to [completion_date]
 
 [Repeat format for trials 3-5]
 
-**Remaining Trials (if detailed_trials_remaining > 0):**
-[Extract EXACTLY from detailed_trials_summary field - it contains real NCT IDs, phases, sponsors]
+**Additional Trials ([detailed_trials_remaining] more):**
+[IF detailed_trials_summary exists, copy it EXACTLY. Otherwise write: "See visualization for full details"]
 
 ---
 
-### 📜 Patents (if PATENT AGENT ran)
+### 📜 Patents (ONLY if PATENT AGENT data exists above)
 **Stats:** Total: [total_patents_found] | Expiring Soon: [expiring_soon_count] | FTO Risk: [risk_level]
 
-**Top 5 Patents - FULL DETAILS:**
+**Top 5 Patents:**
 
 1. **[patent_number]**: [title]
    - Assignee: [assignee] | Filing: [filing_date]
    - Expiry: [expiry_date] | Status: [status]
-   - Years Left: [years_until_expiry]
 
 2. **[patent_number]**: [title]
    - Assignee: [assignee] | Filing: [filing_date]
    - Expiry: [expiry_date] | Status: [status]
-   - Years Left: [years_until_expiry]
 
-[Repeat for patents 3-5]
+[Continue for patents 3-5]
 
-**Remaining Patents ([detailed_patents_remaining] patents):**
-[Extract EXACTLY from detailed_patents_summary field - ONE LINE with patent numbers, status, expiry]
+**Additional Patents ([detailed_patents_remaining] more):**
+[IF detailed_patents_summary exists, copy it EXACTLY. Otherwise write: "See visualization for full details"]
 
 
 ---
 
-### 📚 Literature
-[ONLY IF "WEB_INTELLIGENCE AGENT" appears in data above]
-[If Web Intelligence not present: SKIP THIS ENTIRE SECTION]
+### 📚 Literature (ONLY if WEB_INTELLIGENCE AGENT data exists above)
 **Total:** [total_publications_found] publications
 
 **Top 5 Publications - FULL DETAILS:**
@@ -1330,8 +1325,8 @@ FORMAT:
 
 [Repeat for publications 2-5]
 
-**Remaining Publications (if detailed_publications_remaining > 0):**
-[Extract EXACTLY from detailed_publications_summary field - it contains real PMIDs and journals]
+**Additional Publications ([detailed_publications_remaining] more):**
+[IF detailed_publications_summary exists, copy it EXACTLY. Otherwise: "See visualization"]
 
 ---
 
@@ -1345,15 +1340,15 @@ FORMAT:
 2. [Recommendation with data justification and timeline]
 
 ## Data Sources
-IQVIA: [X] drugs | EXIM: [X] records | Trials: [X] | Patents: [X] | Literature: [X]
-
+[List agents that actually ran and their record counts]
 ---
 
-REMEMBER:
-- Items 1-5: FULL detailed cards with ALL fields
-- Items 6+: Use the _summary fields provided (they contain REAL API data)
-- NO "[Continue listing...]" text
-- Use REAL data from fields
+⚠️ CRITICAL RULES:
+- Items 1-5: Show FULL details
+- Items 6+: Copy the _summary field VERBATIM (don't add brackets)
+- If _summary doesn't exist: Write "See visualization for complete details"
+- NEVER write placeholder text like "[Extract from...]"
+
 
 Write the report now:"""
 

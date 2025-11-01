@@ -631,24 +631,57 @@ class EPOPatentFetcher:
         patents = []
 
         try:
-            world_patent_data = data.get('ops:world-patent-data', {})    
+            if self.verbose:
+                import json
+                debug_file = Path("epo_response_debug.json")
+                with open(debug_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                print(f"  📁 Saved response to: {debug_file}")
+                print(f"  🔍 Top-level keys: {list(data.keys())}")
+                 
+            # Navigate structure
+            world_patent_data = data.get('ops:world-patent-data', {})
+            
+            if self.verbose:
+                print(f"  🔍 world-patent-data keys: {list(world_patent_data.keys())}")
+
             biblio_search = world_patent_data.get('ops:biblio-search', {})
+
+            if self.verbose:
+                print(f"  🔍 biblio-search keys: {list(biblio_search.keys())}")
+
             search_result = biblio_search.get('ops:search-result', {})
+
+            if self.verbose:
+                print(f"  🔍 search-result keys: {list(search_result.keys())}")
+
             pub_refs = search_result.get('ops:publication-reference', [])
+
             if not isinstance(pub_refs, list):
                 pub_refs = [pub_refs] if pub_refs else []
-            if self.verbose and pub_refs:
-                print(f"  Parsing {len(pub_refs)} patent results...")
-            for pub_ref in pub_refs:
+
+            if self.verbose:
+                print(f"  🔍 Found {len(pub_refs)} publication references")
+                if pub_refs:
+                    print(f"  🔍 First pub_ref keys: {list(pub_refs[0].keys())}")
+                    print(f"  🔍 First pub_ref structure:")
+                    import json
+                    print(json.dumps(pub_refs[0], indent=2)[:500])
+
+            for i, pub_ref in enumerate(pub_refs):
                 patent = self._parse_epo_patent(pub_ref)
                 if patent:
                     patents.append(patent)
 
+                if i == 0 and self.verbose:
+                    print(f"  🔍 First patent parsed: {patent}")
+
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ Response parse error: {e}")
-                print(f"  Response structure: {list(data.keys())}")
-                
+                print(f"  ⚠ Parse error: {e}")
+                import traceback
+                traceback.print_exc()
+
         return patents
 
     
