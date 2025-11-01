@@ -94,7 +94,7 @@ class PatentAgent:
         self, drugs: List[str] = None, keywords: List[str] = None, max_results: int = 30
     ) -> Dict[str, Any]:
         """
-        Comprehensive patent search and landscape analysis
+        Comprehensive patent search with TOP 5 DETAILED
         """
         if self.verbose:
             print(f"\n[Patent Agent] Searching patents...")
@@ -117,7 +117,7 @@ class PatentAgent:
         # Search by drugs
         if drugs:
             for drug in drugs:
-                patents = self.fetcher.search_patents(drug, max_results=max_results)
+                patents = self.fetcher.search_patents(drug, max_results=max_results, fetch_details_count=5)
                 if patents:
                     results["patents_by_drug"][drug] = {
                         "count": len(patents),
@@ -136,7 +136,7 @@ class PatentAgent:
                 print(f"  Keywords (filtered): {filtered_keywords}")
 
             for keyword in filtered_keywords:
-                patents = self.fetcher.search_patents(keyword, max_results=max_results)
+                patents = self.fetcher.search_patents(keyword, max_results=max_results, fetch_details_count=5)
                 if patents:
                     all_patents.extend(patents)
 
