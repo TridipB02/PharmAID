@@ -542,10 +542,11 @@ class EPOPatentFetcher:
     def _fetch_patent_biblio(self, patent_number: str) -> Dict:
         """
         Fetch full bibliographic details for a specific patent
-        
+        FIXED to match actual EPO response structure
+    
         Args:
-            patent_number: Patent number (e.g., "WO2025227064A1")
-        
+            patent_number: Patent number (e.g., "CN120549879A")
+    
         Returns:
             Dict with title, assignee, dates
         """
@@ -568,77 +569,108 @@ class EPOPatentFetcher:
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Navigate structure
+
+                #CORRECT NAVIGATION (from actual EPO response)
                 world_data = data.get('ops:world-patent-data', {})
-                patent_docs = world_data.get('ops:patent-documents', {})
-                patent_doc = patent_docs.get('ops:patent-document', {})
-                biblio_data = patent_doc.get('bibliographic-data', {})
-                
-                # Extract title
+
+                #Key difference: exchange-documents, not patent-documents
+                exchange_docs = world_data.get('exchange-documents', {})
+                exchange_doc = exchange_docs.get('exchange-document', {})
+                biblio_data = exchange_doc.get('bibliographic-data', {})
+
+                #Extract title (from invention-title array)
                 title = 'N/A'
-                title_section = biblio_data.get('invention-title', {})
-                
-                if isinstance(title_section, list):
-                    for t in title_section:
-                        if isinstance(t, dict):
-                            title = t.get('$', 'N/A')
-                            if t.get('@lang') == 'en':
+                title_list = biblio_data.get('invention-title', [])
+
+                if isinstance(title_list, list):
+                    #Look for English title first
+                    for title_obj in title_list:
+                        if isinstance(title_obj, dict):
+                            if title_obj.get('@lang') == 'en':
+                                title = title_obj.get('$', 'N/A')
                                 break
-                elif isinstance(title_section, dict):
-                    title = title_section.get('$', 'N/A')
-                
-                # Extract assignee
+                            elif title == 'N/A':  # Use any title as fallback
+                                title = title_obj.get('$', 'N/A')
+                elif isinstance(title_list, dict):
+                    title = title_list.get('$', 'N/A')
+
+                #Extract assignee/applicant (from parties -> applicants)
                 assignee = 'N/A'
                 parties = biblio_data.get('parties', {})
-                applicants = parties.get('applicants', {})
-                applicant_list = applicants.get('applicant', [])
-                
+                applicants_section = parties.get('applicants', {})
+                applicant_list = applicants_section.get('applicant', [])
+            
                 if not isinstance(applicant_list, list):
                     applicant_list = [applicant_list]
-                
+
                 if applicant_list:
-                    first_applicant = applicant_list[0]
-                    name_obj = first_applicant.get('applicant-name', {})
-                    if isinstance(name_obj, dict):
+                    # Find English/epodoc format applicant
+                    for applicant in applicant_list:
+                        if applicant.get('@data-format') == 'epodoc':
+                            name_obj = applicant.get('applicant-name', {})
+                            name_data = name_obj.get('name', {})
+                            if isinstance(name_data, dict):
+                                assignee = name_data.get('$', 'N/A')
+                                break
+                            elif isinstance(name_data, str):
+                                assignee = name_data
+                                break
+
+                    #Fallback to first applicant if no epodoc format
+                    if assignee == 'N/A' and applicant_list:
+                        first_applicant = applicant_list[0]
+                        name_obj = first_applicant.get('applicant-name', {})
                         name_data = name_obj.get('name', {})
                         if isinstance(name_data, dict):
                             assignee = name_data.get('$', 'N/A')
                         elif isinstance(name_data, str):
                             assignee = name_data
-                
-                # Extract dates
+
+                #Extract publication date
                 pub_ref = biblio_data.get('publication-reference', {})
-                doc_id = pub_ref.get('document-id', {})
-                if isinstance(doc_id, list):
-                    doc_id = doc_id[0]
-                
-                pub_date = doc_id.get('date', {}).get('$', 'N/A')
-                
-                # Get filing date
+                pub_doc_ids = pub_ref.get('document-id', [])
+            
+                if not isinstance(pub_doc_ids, list):
+                    pub_doc_ids = [pub_doc_ids]
+
+                pub_date = 'N/A'
+                for doc_id in pub_doc_ids:
+                    if doc_id.get('@document-id-type') == 'docdb':
+                        date_obj = doc_id.get('date', {})
+                        pub_date = date_obj.get('$', 'N/A')
+                        break
+
+                #Extract filing/application date
                 app_ref = biblio_data.get('application-reference', {})
-                app_doc_id = app_ref.get('document-id', {})
-                if isinstance(app_doc_id, list):
-                    app_doc_id = app_doc_id[0]
-                
-                filing_date = app_doc_id.get('date', {}).get('$', pub_date)
-                
-                # Calculate expiry
+                app_doc_ids = app_ref.get('document-id', [])
+            
+                if not isinstance(app_doc_ids, list):
+                    app_doc_ids = [app_doc_ids]
+
+                filing_date = pub_date  # Default to publication date
+                for doc_id in app_doc_ids:
+                    if doc_id.get('@document-id-type') == 'epodoc':
+                        date_obj = doc_id.get('date', {})
+                        filing_date = date_obj.get('$', pub_date)
+                        break
+
+                #Calculate expiry (20 years from filing)
                 expiry_date = 'N/A'
                 status = 'Unknown'
-                
+                filing_date_formatted = 'N/A'
+            
                 try:
                     filing_dt = datetime.strptime(filing_date, '%Y%m%d')
                     expiry_dt = filing_dt + timedelta(days=20*365)
                     expiry_date = expiry_dt.strftime('%Y-%m-%d')
                     filing_date_formatted = filing_dt.strftime('%Y-%m-%d')
-                    
+                
                     current_year = datetime.now().year
                     expiry_year = expiry_dt.year
                     status = 'Active' if expiry_year > current_year else 'Expired'
                 except:
-                    filing_date_formatted = filing_date
-                
+                    filing_date_formatted = filing_date if filing_date != 'N/A' else 'N/A'
+
                 return {
                     'title': title if title != 'N/A' else f"Patent {patent_number}",
                     'assignee': assignee,
@@ -648,13 +680,24 @@ class EPOPatentFetcher:
                     'status': status
                 }
             
+            elif response.status_code == 404:
+                # Patent not found in EPO biblio (might be too recent or from other DB)
+                return {
+                    'title': f"Patent {patent_number}",
+                    'assignee': 'Data not available in EPO',
+                    'filing_date': 'N/A',
+                    'grant_date': 'N/A',
+                    'expiry_date': 'N/A',
+                    'status': 'Unknown'
+                }
+            
             return {}
         
         except Exception as e:
             if self.verbose:
                 print(f"    ⚠ Biblio fetch failed: {e}")
             return {}
-    
+  
     def _generate_mock_patents(self, query: str, count: int) -> List[Dict]:
         """Generate mock patent data as fallback"""
         import random
