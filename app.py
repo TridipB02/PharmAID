@@ -232,7 +232,7 @@ def process_query(user_query: str):
 
 
 def render_response():
-    """Render the response from the agent with enhanced visualizations"""
+    """Render unified summary - everything in ONE section"""
     if st.session_state.current_response is None:
         # Show helpful information card
         st.markdown("### 🎯 Pharmaceutical Intelligence Capabilities")
@@ -240,67 +240,95 @@ def render_response():
         st.info("""
         **Ask questions about:**
         
-        🔹 **Market Dynamics** - Sales trends, CAGR analysis, competitive positioning, market opportunities
-        
-        🔹 **Clinical Development** - Pipeline analysis, trial phases, sponsor insights, repurposing opportunities
-        
-        🔹 **Patent Landscape** - IP protection, expiry timelines, FTO analysis, competitive filings
-        
-        🔹 **Global Trade** - Import/export patterns, sourcing strategies, trade dynamics, supply chain insights
-        
-        🔹 **Scientific Evidence** - Literature analysis, treatment guidelines, research trends
+        🔹 **Market Dynamics** - Sales trends, CAGR analysis, competitive positioning
+        🔹 **Clinical Development** - Pipeline analysis, trial phases, repurposing opportunities
+        🔹 **Patent Landscape** - IP protection, expiry timelines, FTO analysis
+        🔹 **Global Trade** - Import/export patterns, sourcing strategies
+        🔹 **Scientific Evidence** - Literature analysis, treatment guidelines
         """)
-
         return
 
     response = st.session_state.current_response
 
-    # Display query
-    st.markdown("### 📋 Your Query")
+    # =============================================
+    # SINGLE "SUMMARY" SECTION WITH EVERYTHING
+    # =============================================
+    
+    st.markdown("## 📋 Summary")
+    
+    # Show the query
     st.markdown(
-        f'<div class="query-box">{response["query"]}</div>', unsafe_allow_html=True
+        f'<div class="query-box"><strong>Your Query:</strong> {response["query"]}</div>', 
+        unsafe_allow_html=True
     )
 
-    # Display parsed query info
-    with st.expander("🔍 Query Analysis", expanded=False):
+    # Query analysis (collapsed by default)
+    with st.expander("🔍 View Query Analysis", expanded=False):
         parsed = response.get("parsed_query", {})
-
         col1, col2 = st.columns(2)
         with col1:
             st.write("**Intent:**", parsed.get("intent", "N/A"))
-            st.write(
-                "**Entities:**",
-                ", ".join(parsed.get("entities", {}).get("drugs", []))
-                or "None detected",
-            )
+            st.write("**Entities:**", ", ".join(parsed.get("entities", {}).get("drugs", [])) or "None")
         with col2:
-            st.write(
-                "**Required Agents:**", ", ".join(parsed.get("required_agents", []))
-            )
+            st.write("**Required Agents:**", ", ".join(parsed.get("required_agents", [])))
             st.write("**Keywords:**", ", ".join(parsed.get("keywords", [])[:5]))
 
-    # Enhanced visualizations section
-    render_visualizations(response)
+    st.markdown("---")
 
-    # Display response
-    st.markdown("### 💬 Response")
+    # =============================================
+    # AI TEXT RESPONSE
+    # =============================================
     st.markdown(
         f'<div class="response-box">{response["response"]}</div>',
         unsafe_allow_html=True,
     )
 
-    # ENHANCED Action buttons section
     st.markdown("---")
+
+    # =============================================
+    # INLINE DATA: CHARTS, TABLES, DATABASE INFO
+    # =============================================
+    
+    agent_responses = response.get("agent_responses", [])
+    
+    for agent_response in agent_responses:
+        if not agent_response.get("success"):
+            continue
+        
+        agent = agent_response.get("agent", "")
+        data = agent_response.get("data", {})
+        
+        # Render inline visualizations WITHOUT download buttons
+        if agent == "iqvia":
+            render_iqvia_inline(data)
+        
+        elif agent == "clinical_trials":
+            render_clinical_trials_inline(data)
+        
+        elif agent == "patent":
+            render_patent_inline(data)
+        
+        elif agent == "exim":
+            render_exim_inline(data)
+        
+        elif agent == "web_intelligence":
+            render_literature_inline(data)
+
+    st.markdown("---")
+
+    # =============================================
+    # EXPORT OPTIONS (AT END)
+    # =============================================
     st.markdown("### 📥 Export Options")
     
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("📄 Generate Professional PDF", use_container_width=True):
+        if st.button("📄 Generate PDF Report", use_container_width=True):
             generate_professional_pdf_report(response)
 
     with col2:
-        if st.button("📊 Generate Excel Data", use_container_width=True):
+        if st.button("📊 Generate Excel", use_container_width=True):
             generate_excel_report(response)
 
     with col3:
@@ -309,354 +337,243 @@ def render_response():
             st.rerun()
 
 
-def render_visualizations(response: Dict):
-    """
-    Render enhanced visualizations for ALL agent responses
-    Shows COMPLETE data in charts/tables (not truncated like LLM response)
-    """
+def render_iqvia_inline(data: Dict):
+    """Inline IQVIA data - charts + table (NO download button)"""
     
-    st.markdown("### 📊 Data Visualizations")
-    st.info("💡 **Note:** Charts and tables below show ALL data. The text response shows top 5 detailed + summary for rest.")
+    drug_analyses = data.get("drug_analyses", [])
     
-    agent_responses = response.get("agent_responses", [])
+    if not drug_analyses:
+        return
     
-    # Get FULL data from each agent and render visualizations
-    for agent_response in agent_responses:
-        if not agent_response.get("success"):
-            continue
-        
-        agent = agent_response.get("agent", "")
-        data = agent_response.get("data", {})
-        
-        # Render visualizations based on agent type
-        if agent == "iqvia":
-            render_iqvia_full_viz(data)
-        
-        elif agent == "clinical_trials":
-            render_clinical_trials_full_viz(data)
-        
-        elif agent == "patent":
-            render_patent_full_viz(data)
-        
-        elif agent == "exim":
-            render_exim_full_viz(data)
-        
-        elif agent == "web_intelligence":
-            render_literature_full_viz(data)
-
-
-def render_iqvia_full_viz(data: Dict):
-    """
-    Show ALL market data in visualizations
-    """
+    st.markdown(f"#### 💰 Market Analysis ({len(drug_analyses)} Drugs)")
     
-    with st.expander("💰 IQVIA Market Analysis", expanded=True):
-        
-        drug_analyses = data.get("drug_analyses", [])
-        
-        if not drug_analyses:
-            st.info("No IQVIA market data available")
-            return
-        
-        st.markdown(f"#### Market Analysis (All {len(drug_analyses)} Drugs)")
-        
-        # Create DataFrame from ALL drugs
-        market_df = pd.DataFrame([{
-            "Drug": d.get("drug_name", "Unknown"),
-            "Sales (USD M)": d.get("market_metrics", {}).get("current_sales_usd_million", 0),
-            "CAGR (%)": d.get("market_metrics", {}).get("cagr_percent", 0),
-            "Trend": d.get("market_metrics", {}).get("market_trend", "N/A"),
-            "Therapeutic Area": d.get("therapeutic_area", "N/A")
-        } for d in drug_analyses])
-        
-        # Charts
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            fig = px.bar(
-                market_df,
-                x="Drug",
-                y="Sales (USD M)",
-                title="Sales Comparison (All Drugs)",
-                color="Trend",
-                color_discrete_map={
-                    "increasing": "#2ecc71",
-                    "stable": "#f39c12",
-                    "decreasing": "#e74c3c"
-                }
-            )
-            st.plotly_chart(fig, use_container_width=True)
-        
-        with col2:
-            fig = px.bar(
-                market_df,
-                x="Drug",
-                y="CAGR (%)",
-                title="Growth Rate Comparison",
-                color="CAGR (%)",
-                color_continuous_scale="RdYlGn"
-            )
-            st.plotly_chart(fig, use_container_width=True)
-        
-        # Full table
-        st.markdown("#### Detailed Market Data")
-        st.dataframe(market_df, use_container_width=True)
-        
-        # Download button
-        csv = market_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download Market Data (CSV)",
-            data=csv,
-            file_name="market_data_full.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-
-def render_clinical_trials_full_viz(data: Dict):
-    """
-    Show ALL clinical trials in visualizations
-    """
+    # Create DataFrame
+    market_df = pd.DataFrame([{
+        "Drug": d.get("drug_name", "Unknown"),
+        "Sales (USD M)": d.get("market_metrics", {}).get("current_sales_usd_million", 0),
+        "CAGR (%)": d.get("market_metrics", {}).get("cagr_percent", 0),
+        "Trend": d.get("market_metrics", {}).get("market_trend", "N/A"),
+        "Therapeutic Area": d.get("therapeutic_area", "N/A")
+    } for d in drug_analyses])
     
-    with st.expander("🔬 Clinical Trials Analysis", expanded=True):
-        
-        total = data.get("total_trials_found", 0)
-        if total == 0:
-            st.info("No clinical trials data available")
-            return
-        
-        # ✅ Metrics
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("Total Trials", total)
-        
-        with col2:
-            active = data.get("status_summary", {}).get("active_trials", 0)
-            st.metric("Active Trials", active)
-        
-        with col3:
-            advanced = data.get("phase_distribution", {}).get("advanced_trials_count", 0)
-            st.metric("Advanced Phase", advanced)
-        
-        # ✅ Chart: Phase Distribution (ALL trials)
-        phase_dist = data.get("phase_distribution", {}).get("distribution", {})
-        if phase_dist:
-            st.markdown("#### Trial Phase Distribution")
-            
-            fig = go.Figure(data=[go.Pie(
-                labels=list(phase_dist.keys()),
-                values=[phase_dist[p]["count"] for p in phase_dist.keys()],
-                hole=0.3,
-                marker=dict(colors=px.colors.qualitative.Set3)
-            )])
-            
-            fig.update_layout(title=f"All {total} Trials by Phase")
-            st.plotly_chart(fig, use_container_width=True)
-        
-        # ✅ Table: ALL Trials (scrollable)
-        detailed_trials = data.get("detailed_trials", [])
-        if detailed_trials:
-            st.markdown(f"#### All Trial Details ({len(detailed_trials)} Trials)")
-            
-            trial_df = pd.DataFrame([{
-                "NCT ID": t.get("nct_id", "N/A"),
-                "Title": t.get("title", "N/A")[:50] + "..." if len(t.get("title", "")) > 50 else t.get("title", "N/A"),
-                "Phase": t.get("phase", "N/A"),
-                "Status": t.get("status", "N/A"),
-                "Sponsor": t.get("sponsor", "N/A")[:30] if len(t.get("sponsor", "")) > 30 else t.get("sponsor", "N/A"),
-                "Start Date": t.get("start_date", "N/A")
-            } for t in detailed_trials])
-            
-            st.dataframe(trial_df, use_container_width=True, height=400)
-            
-            # Download button
-            csv = trial_df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download All Trials (CSV)",
-                data=csv,
-                file_name="clinical_trials_full_data.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
-
-
-def render_patent_full_viz(data: Dict):
-    """
-    Show ALL patents in visualizations (not just top 5)
-    """
+    # Charts side by side
+    col1, col2 = st.columns(2)
     
-    with st.expander("📜 Patent Landscape Analysis", expanded=True):
-        
-        total = data.get("total_patents_found", 0)
-        if total == 0:
-            st.info("No patent data available")
-            return
-        
-        # ✅ Metrics Cards
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric("Total Patents", total)
-        
-        with col2:
-            expiring_soon = data.get("expiry_timeline", {}).get("expiring_soon_count", 0)
-            st.metric("Expiring Soon (0-2 yrs)", expiring_soon)
-        
-        with col3:
-            fto_risk = data.get("fto_assessment", {}).get("risk_level", "Unknown")
-            st.metric("FTO Risk", fto_risk)
-        
-        with col4:
-            active = data.get("fto_assessment", {}).get("active_patents_count", 0)
-            st.metric("Active Patents", active)
-        
-        # ✅ Chart: Patent Expiry Timeline (ALL patents)
-        expiry_timeline = data.get("expiry_timeline", {})
-        if expiry_timeline:
-            st.markdown("#### Patent Expiry Distribution")
-            
-            timeline_df = pd.DataFrame({
-                "Category": ["Expired", "Soon (0-2y)", "Medium (2-5y)", "Long (5+y)"],
-                "Count": [
-                    expiry_timeline.get("expired_count", 0),
-                    expiry_timeline.get("expiring_soon_count", 0),
-                    expiry_timeline.get("expiring_medium_count", 0),
-                    expiry_timeline.get("expiring_long_count", 0)
-                ]
-            })
-            
-            fig = px.bar(
-                timeline_df,
-                x="Category",
-                y="Count",
-                title=f"Patent Expiry Timeline (All {total} Patents)",
-                color="Count",
-                color_continuous_scale="RdYlGn_r"
-            )
-            st.plotly_chart(fig, use_container_width=True)
-        
-        # ✅ Table: ALL Patents (scrollable)
-        detailed_patents = data.get("detailed_patents", [])
-        if detailed_patents:
-            st.markdown(f"#### All Patent Details ({len(detailed_patents)} Patents)")
-            
-            # Create DataFrame from ALL patents
-            patent_df = pd.DataFrame([{
-                "Patent #": p.get("patent_number", "N/A"),
-                "Title": p.get("title", "N/A")[:60] + "..." if len(p.get("title", "")) > 60 else p.get("title", "N/A"),
-                "Assignee": p.get("assignee", "N/A")[:30] if len(p.get("assignee", "")) > 30 else p.get("assignee", "N/A"),
-                "Filing Date": p.get("filing_date", "N/A"),
-                "Expiry Date": p.get("expiry_date", "N/A"),
-                "Status": p.get("status", "Unknown")
-            } for p in detailed_patents])
-            
-            st.dataframe(
-                patent_df,
-                use_container_width=True,
-                height=400  # Scrollable table
-            )
-            
-            # ✅ Download button for full data
-            csv = patent_df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download All Patents (CSV)",
-                data=csv,
-                file_name="patents_full_data.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
-
-
-def render_exim_full_viz(data: Dict):
-    """
-    Show ALL trade data in visualizations
-    """
-    
-    with st.expander("🌍 EXIM Trade Analysis", expanded=True):
-        
-        drug_analyses = data.get("drug_analyses", [])
-        
-        if not drug_analyses:
-            st.info("No EXIM trade data available")
-            return
-        
-        st.markdown(f"#### Trade Analysis (All {len(drug_analyses)} Drugs)")
-        
-        # Create DataFrame
-        trade_df = pd.DataFrame([{
-            "Drug": d.get("drug_name", "Unknown"),
-            "Imports (USD)": d.get("trade_metrics", {}).get("total_import_value_usd", 0),
-            "Exports (USD)": d.get("trade_metrics", {}).get("total_export_value_usd", 0),
-            "Balance": d.get("trade_metrics", {}).get("trade_balance", "Unknown")
-        } for d in drug_analyses])
-        
-        # Chart
-        fig = go.Figure(data=[
-            go.Bar(name="Imports", x=trade_df["Drug"], y=trade_df["Imports (USD)"], marker_color="#e74c3c"),
-            go.Bar(name="Exports", x=trade_df["Drug"], y=trade_df["Exports (USD)"], marker_color="#2ecc71")
-        ])
-        
-        fig.update_layout(
-            title="Import vs Export (All Drugs)",
-            barmode="group",
-            xaxis_title="Drug",
-            yaxis_title="Trade Value (USD)"
+    with col1:
+        fig = px.bar(
+            market_df,
+            x="Drug",
+            y="Sales (USD M)",
+            title="Sales Comparison",
+            color="Trend",
+            color_discrete_map={
+                "increasing": "#2ecc71",
+                "stable": "#f39c12",
+                "decreasing": "#e74c3c"
+            }
         )
         st.plotly_chart(fig, use_container_width=True)
-        
-        # Table
-        st.markdown("#### Detailed Trade Data")
-        st.dataframe(trade_df, use_container_width=True)
-        
-        # Download button
-        csv = trade_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download Trade Data (CSV)",
-            data=csv,
-            file_name="trade_data_full.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
- 
-def render_literature_full_viz(data: Dict):
-    """
-    Show ALL publications in visualizations
-    """
     
-    with st.expander("📚 Scientific Literature", expanded=True):
+    with col2:
+        fig = px.bar(
+            market_df,
+            x="Drug",
+            y="CAGR (%)",
+            title="Growth Rate",
+            color="CAGR (%)",
+            color_continuous_scale="RdYlGn"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    
+    # Table (NO download button)
+    st.dataframe(market_df, use_container_width=True)
+    
+    st.markdown("---")
+
+
+def render_clinical_trials_inline(data: Dict):
+    """Inline clinical trials - charts + table (NO download button)"""
+    
+    total = data.get("total_trials_found", 0)
+    if total == 0:
+        return
+    
+    st.markdown(f"#### 🔬 Clinical Trials ({total} Trials)")
+    
+    # Metrics
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("Total Trials", total)
+    
+    with col2:
+        active = data.get("status_summary", {}).get("active_trials", 0)
+        st.metric("Active Trials", active)
+    
+    with col3:
+        advanced = data.get("phase_distribution", {}).get("advanced_trials_count", 0)
+        st.metric("Advanced Phase", advanced)
+    
+    # Phase Distribution Chart
+    phase_dist = data.get("phase_distribution", {}).get("distribution", {})
+    if phase_dist:
+        fig = go.Figure(data=[go.Pie(
+            labels=list(phase_dist.keys()),
+            values=[phase_dist[p]["count"] for p in phase_dist.keys()],
+            hole=0.3,
+            marker=dict(colors=px.colors.qualitative.Set3)
+        )])
         
-        total = data.get("total_publications_found", 0)
-        if total == 0:
-            st.info("No literature data available")
-            return
+        fig.update_layout(title=f"Trial Phase Distribution")
+        st.plotly_chart(fig, use_container_width=True)
+    
+    # Table (NO download button)
+    detailed_trials = data.get("detailed_trials", [])
+    if detailed_trials:
+        trial_df = pd.DataFrame([{
+            "NCT ID": t.get("nct_id", "N/A"),
+            "Title": t.get("title", "N/A")[:50] + "..." if len(t.get("title", "")) > 50 else t.get("title", "N/A"),
+            "Phase": t.get("phase", "N/A"),
+            "Status": t.get("status", "N/A"),
+            "Sponsor": t.get("sponsor", "N/A")[:30] if len(t.get("sponsor", "")) > 30 else t.get("sponsor", "N/A"),
+            "Start Date": t.get("start_date", "N/A")
+        } for t in detailed_trials])
         
-        st.metric("Total Publications", total)
+        st.dataframe(trial_df, use_container_width=True, height=400)
+    
+    st.markdown("---")
+
+
+def render_patent_inline(data: Dict):
+    """Inline patent data - charts + table (NO download button)"""
+    
+    total = data.get("total_patents_found", 0)
+    if total == 0:
+        return
+    
+    st.markdown(f"#### 📜 Patent Landscape ({total} Patents)")
+    
+    # Metrics
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Total Patents", total)
+    
+    with col2:
+        expiring_soon = data.get("expiry_timeline", {}).get("expiring_soon_count", 0)
+        st.metric("Expiring Soon", expiring_soon)
+    
+    with col3:
+        fto_risk = data.get("fto_assessment", {}).get("risk_level", "Unknown")
+        st.metric("FTO Risk", fto_risk)
+    
+    with col4:
+        active = data.get("fto_assessment", {}).get("active_patents_count", 0)
+        st.metric("Active", active)
+    
+    # Expiry Timeline Chart
+    expiry_timeline = data.get("expiry_timeline", {})
+    if expiry_timeline:
+        timeline_df = pd.DataFrame({
+            "Category": ["Expired", "Soon (0-2y)", "Medium (2-5y)", "Long (5+y)"],
+            "Count": [
+                expiry_timeline.get("expired_count", 0),
+                expiry_timeline.get("expiring_soon_count", 0),
+                expiry_timeline.get("expiring_medium_count", 0),
+                expiry_timeline.get("expiring_long_count", 0)
+            ]
+        })
         
-        # ✅ Table: ALL Publications
-        detailed_pubs = data.get("detailed_publications", [])
-        if detailed_pubs:
-            st.markdown(f"#### All Publications ({len(detailed_pubs)} Papers)")
-            
-            pub_df = pd.DataFrame([{
-                "PMID": p.get("pmid", "N/A"),
-                "Title": p.get("title", "N/A")[:60] + "..." if len(p.get("title", "")) > 60 else p.get("title", "N/A"),
-                "Year": p.get("year", "N/A"),
-                "Journal": p.get("journal", "N/A")[:40] if len(p.get("journal", "")) > 40 else p.get("journal", "N/A"),
-                "URL": p.get("url", "N/A")
-            } for p in detailed_pubs])
-            
-            st.dataframe(pub_df, use_container_width=True, height=400)
-            
-            # Download button
-            csv = pub_df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download All Publications (CSV)",
-                data=csv,
-                file_name="publications_full_data.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+        fig = px.bar(
+            timeline_df,
+            x="Category",
+            y="Count",
+            title="Patent Expiry Timeline",
+            color="Count",
+            color_continuous_scale="RdYlGn_r"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    
+    # Table (NO download button)
+    detailed_patents = data.get("detailed_patents", [])
+    if detailed_patents:
+        patent_df = pd.DataFrame([{
+            "Patent #": p.get("patent_number", "N/A"),
+            "Title": p.get("title", "N/A")[:60] + "..." if len(p.get("title", "")) > 60 else p.get("title", "N/A"),
+            "Assignee": p.get("assignee", "N/A")[:30] if len(p.get("assignee", "")) > 30 else p.get("assignee", "N/A"),
+            "Filing Date": p.get("filing_date", "N/A"),
+            "Expiry Date": p.get("expiry_date", "N/A"),
+            "Status": p.get("status", "Unknown")
+        } for p in detailed_patents])
+        
+        st.dataframe(patent_df, use_container_width=True, height=400)
+    
+    st.markdown("---")
+
+
+def render_exim_inline(data: Dict):
+    """Inline trade data - charts + table (NO download button)"""
+    
+    drug_analyses = data.get("drug_analyses", [])
+    
+    if not drug_analyses:
+        return
+    
+    st.markdown(f"#### 🌍 Trade Analysis ({len(drug_analyses)} Drugs)")
+    
+    # Create DataFrame
+    trade_df = pd.DataFrame([{
+        "Drug": d.get("drug_name", "Unknown"),
+        "Imports (USD)": d.get("trade_metrics", {}).get("total_import_value_usd", 0),
+        "Exports (USD)": d.get("trade_metrics", {}).get("total_export_value_usd", 0),
+        "Balance": d.get("trade_metrics", {}).get("trade_balance", "Unknown")
+    } for d in drug_analyses])
+    
+    # Chart
+    fig = go.Figure(data=[
+        go.Bar(name="Imports", x=trade_df["Drug"], y=trade_df["Imports (USD)"], marker_color="#e74c3c"),
+        go.Bar(name="Exports", x=trade_df["Drug"], y=trade_df["Exports (USD)"], marker_color="#2ecc71")
+    ])
+    
+    fig.update_layout(
+        title="Import vs Export",
+        barmode="group",
+        xaxis_title="Drug",
+        yaxis_title="Trade Value (USD)"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Table (NO download button)
+    st.dataframe(trade_df, use_container_width=True)
+    
+    st.markdown("---")
+
+
+def render_literature_inline(data: Dict):
+    """Inline literature data - table only (NO download button)"""
+    
+    total = data.get("total_publications_found", 0)
+    if total == 0:
+        return
+    
+    st.markdown(f"#### 📚 Scientific Literature ({total} Publications)")
+    
+    st.metric("Total Publications", total)
+    
+    # Table (NO download button)
+    detailed_pubs = data.get("detailed_publications", [])
+    if detailed_pubs:
+        pub_df = pd.DataFrame([{
+            "PMID": p.get("pmid", "N/A"),
+            "Title": p.get("title", "N/A")[:60] + "..." if len(p.get("title", "")) > 60 else p.get("title", "N/A"),
+            "Year": p.get("year", "N/A"),
+            "Journal": p.get("journal", "N/A")[:40] if len(p.get("journal", "")) > 40 else p.get("journal", "N/A"),
+            "URL": p.get("url", "N/A")
+        } for p in detailed_pubs])
+        
+        st.dataframe(pub_df, use_container_width=True, height=400)
+    
+    st.markdown("---")
 
 def generate_professional_pdf_report(response: Dict):
     """Generate PROFESSIONAL PDF report with enhanced charts - CLEAN VERSION"""
@@ -702,11 +619,10 @@ def generate_professional_pdf_report(response: Dict):
                 
                 with st.expander("🔧 Installation Instructions"):
                     st.code("""
-pip install reportlab matplotlib seaborn
-
-# Or install all requirements:
-pip install -r requirements.txt
-                    """, language="bash")
+                            pip install reportlab matplotlib seaborn
+                            # Or install all requirements:
+                            pip install -r requirements.txt
+                            """, language="bash")
         
         except Exception as e:
             st.error(f"❌ Error generating report: {str(e)}")
