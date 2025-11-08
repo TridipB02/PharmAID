@@ -640,9 +640,5 @@ If you use PharmAID in your research, please cite:
 }
 ```
 
----
-
 **Built with precision for Powering the future of Pharmaceutical Intelligence**
 **Developers Name - Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada**
-
-
