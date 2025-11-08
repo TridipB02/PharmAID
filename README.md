@@ -627,11 +627,6 @@ pytest tests/test_agents.py -v
 
 ---
 
-## Contact & Support
-
-**GitHub**: https://github.com/TridipB02/Pharma-Agentic-AI
----
-
 ## Citation
 
 If you use PharmaAID in your research, please cite:
@@ -649,4 +644,3 @@ If you use PharmaAID in your research, please cite:
 
 **Built with precision for Powering the future of Pharmaceutical Intelligence**
 **Developers Name - Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada**
-
