@@ -187,8 +187,8 @@ ollama run llama3.1:8b "Hello, test"
 
 ```bash
 # Clone repository
-[git clone https://github.com/TridipB02/Pharma-Agentic-AI.git]
-cd Pharma-Agentic-AI
+[git clone https://github.com/TridipB02/PharmaAID.git]
+cd PharmaAID
 
 # Create virtual environment
 python -m venv venv
@@ -644,3 +644,4 @@ If you use PharmaAID in your research, please cite:
 
 **Built with precision for Powering the future of Pharmaceutical Intelligence**
 **Developers Name - Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada**
+
