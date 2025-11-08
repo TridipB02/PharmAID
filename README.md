@@ -187,8 +187,8 @@ ollama run llama3.1:8b "Hello, test"
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/pharmaaid.git
-cd pharmaaid
+[git clone https://github.com/TridipB02/Pharma-Agentic-AI.git]
+cd Pharma-Agentic-AI
 
 # Create virtual environment
 python -m venv venv
@@ -610,24 +610,14 @@ pytest tests/test_agents.py -v
 
 ## Team & Acknowledgments
 
-**Project Lead**: [Your Name]
-**Institution**: [Your Institution]
-**Hackathon**: India's Largest Techathon 2024
+**Project Team**: Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada
+**Institution**: National Forensic Sciences University
 
 **Technologies Used**: Ollama, CrewAI, LangChain, Streamlit, ReportLab, Matplotlib, EPO OPS API, ClinicalTrials.gov API, PubMed API, UN Comtrade API, World Bank API
 
-**Special Thanks**: 
-- Anthropic for Claude API (used in development/testing)
-- Ollama team for local LLM infrastructure
-- EPO for free patent data access
-- NCBI for PubMed/PubChem APIs
-- UN and World Bank for open trade data
-
----
-
 ## License & Usage
 
-**Academic/Research Use**: Free and open-source (MIT License)
+**Academic/Research Use**: Free and open-source 
 
 **Commercial Use**: Contact for licensing
 
@@ -639,11 +629,7 @@ pytest tests/test_agents.py -v
 
 ## Contact & Support
 
-**GitHub**: [Repository URL]
-**Email**: [Your Email]
-**Documentation**: [Docs URL]
-**Demo Video**: [YouTube URL]
-
+**GitHub**: https://github.com/TridipB02/Pharma-Agentic-AI
 ---
 
 ## Citation
@@ -653,9 +639,9 @@ If you use PharmaAID in your research, please cite:
 ```bibtex
 @software{pharmaaid2025,
   title={PharmaAID: Multi-Agent AI System for Pharmaceutical Intelligence},
-  author={[Your Name]},
-  year={2024},
-  url={https://github.com/yourusername/pharmaaid}
+  author={Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada},
+  year={2025},
+  url={https://github.com/yourusername/TridipB02/Pharma-Agentic-AI}
 }
 ```
 
@@ -663,3 +649,4 @@ If you use PharmaAID in your research, please cite:
 
 **Built with precision for Powering the future of Pharmaceutical Intelligence**
 **Developers Name - Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada**
+
