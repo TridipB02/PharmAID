@@ -1,4 +1,4 @@
-# PharmaAID: Pharmaceutical Intelligence & Analysis Dashboard
+# PharmAID: Pharmaceutical Intelligence & Analysis Dashboard
 
 **A Multi-Agent AI System for Strategic Drug Portfolio Planning**
 
@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-PharmaAID is an advanced AI-powered pharmaceutical intelligence platform that leverages multiple specialized agents to provide comprehensive insights for drug portfolio planning, market analysis, and repurposing opportunities. Built for the pharmaceutical industry, PharmaAID integrates data from 7+ real-world APIs and employs local LLM processing to deliver actionable intelligence while maintaining data privacy.
+PharmAID is an advanced AI-powered pharmaceutical intelligence platform that leverages multiple specialized agents to provide comprehensive insights for drug portfolio planning, market analysis, and repurposing opportunities. Built for the pharmaceutical industry, PharmAID integrates data from 7+ real-world APIs and employs local LLM processing to deliver actionable intelligence while maintaining data privacy.
 
 ### Key Achievements
 
@@ -36,7 +36,7 @@ Pharmaceutical companies face critical challenges in:
 
 ### Multi-Agent Orchestration System
 
-PharmaAID employs a **Master-Worker Agent Architecture** where:
+PharmAID employs a **Master-Worker Agent Architecture** where:
 
 ```
 Master Agent (Query Orchestrator)
@@ -187,8 +187,8 @@ ollama run llama3.1:8b "Hello, test"
 
 ```bash
 # Clone repository
-[git clone https://github.com/TridipB02/PharmaAID.git]
-cd PharmaAID
+[git clone https://github.com/TridipB02/PharmAID.git]
+cd PharmAID
 
 # Create virtual environment
 python -m venv venv
@@ -392,7 +392,7 @@ HHI < 1500 -> Low Concentration
 ## Project Structure
 
 ```
-pharmaaid/
+PharmAID/
 │
 ├── agents/                          # AI Agent Modules
 │   ├── master_agent.py             # Query orchestrator
@@ -569,7 +569,7 @@ pytest tests/test_agents.py -v
 
 1. **Time Savings**: 80% reduction in manual research time
    - Traditional approach: 40-60 hours per comprehensive analysis
-   - PharmaAID: 8-12 hours (including validation)
+   - PharmAID: 8-12 hours (including validation)
 
 2. **Cost Reduction**: $500K+ annual savings per analyst team
    - Consolidates 5+ subscription services
@@ -629,14 +629,14 @@ pytest tests/test_agents.py -v
 
 ## Citation
 
-If you use PharmaAID in your research, please cite:
+If you use PharmAID in your research, please cite:
 
 ```bibtex
-@software{pharmaaid2025,
-  title={PharmaAID: Multi-Agent AI System for Pharmaceutical Intelligence},
+@software{PharmAID2025,
+  title={PharmAID: Multi-Agent AI System for Pharmaceutical Intelligence},
   author={Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada},
   year={2025},
-  url={https://github.com/yourusername/TridipB02/Pharma-Agentic-AI}
+  url={https://github.com/TridipB02/PharmAID}
 }
 ```
 
@@ -644,4 +644,5 @@ If you use PharmaAID in your research, please cite:
 
 **Built with precision for Powering the future of Pharmaceutical Intelligence**
 **Developers Name - Tridip Baksi, Debasmita Karmakar, Himanshu Yadav, Naimish Peddada**
+
 
