@@ -36,7 +36,7 @@ class IQVIAAgent:
         self.data_fetcher = MockDataFetcher()
 
         if self.verbose:
-            print("✓ IQVIA Agent initialized")
+            print(" IQVIA Agent initialized")
 
     def analyze_market(
         self,
@@ -92,7 +92,7 @@ class IQVIAAgent:
 
         if self.verbose:
             print(
-                f"✓ Analysis complete - {len(results['drug_analyses'])} drugs, {len(results['therapeutic_area_analyses'])} therapeutic areas"
+                f" Analysis complete - {len(results['drug_analyses'])} drugs, {len(results['therapeutic_area_analyses'])} therapeutic areas"
             )
 
         return results
@@ -114,14 +114,14 @@ class IQVIAAgent:
         drug_info = self.data_fetcher.get_drug_info(drug_name)
         if not drug_info:
             if self.verbose:
-                print(f"  ⚠ No data found for drug: {drug_name}")
+                print(f"  No data found for drug: {drug_name}")
             return None
 
         # Get market data
         market_data = self.data_fetcher.get_iqvia_market_data(drug_name)
         if not market_data:
             if self.verbose:
-                print(f"  ⚠ No IQVIA market data for: {drug_name}")
+                print(f"  No IQVIA market data for: {drug_name}")
             return None
 
         # Calculate CAGR
@@ -188,7 +188,7 @@ class IQVIAAgent:
 
         if not drugs_in_area:
             if self.verbose:
-                print(f"  ⚠ No drugs found in therapeutic area: {therapeutic_area}")
+                print(f"  No drugs found in therapeutic area: {therapeutic_area}")
             return {
                 "therapeutic_area": therapeutic_area,
                 "total_drugs": 0,
@@ -551,4 +551,4 @@ if __name__ == "__main__":
     trends = agent.get_market_trends("Atorvastatin", years=5)
     print(json.dumps(trends, indent=2))
 
-    print("\n✓ All IQVIA Agent tests completed!")
+    print("\n All IQVIA Agent tests completed!")

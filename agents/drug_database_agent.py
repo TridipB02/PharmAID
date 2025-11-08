@@ -280,7 +280,7 @@ class DrugDatabaseAgent:
 
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ Synonyms error: {e}")
+                print(f"  Synonyms error: {e}")
             return {}
 
     def _get_drug_information(self, cid: int) -> Dict[str, Any]:
@@ -353,7 +353,7 @@ class DrugDatabaseAgent:
 
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ Drug info error: {e}")
+                print(f" Drug info error: {e}")
 
         return drug_info
 
@@ -713,4 +713,4 @@ if __name__ == "__main__":
     cache_stats = agent.get_cache_stats()
     print(json.dumps(cache_stats, indent=2))
 
-    print("\n✓ All Drug Database Agent tests completed!")
+    print("\n All Drug Database Agent tests completed!")

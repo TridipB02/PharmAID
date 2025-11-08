@@ -308,13 +308,13 @@ class EPOPatentFetcher:
             success = self._authenticate()
             if success:
                 if self.verbose:
-                    print("✓ EPO Patent Fetcher initialized (Authenticated)")
+                    print(" EPO Patent Fetcher initialized (Authenticated)")
             else:
                 if self.verbose:
-                    print("⚠ EPO authentication failed - using mock data fallback")
+                    print(" EPO authentication failed - using mock data fallback")
         else:
             if self.verbose:
-                print("⚠ EPO keys not found - using anonymous access")
+                print(" EPO keys not found - using anonymous access")
     
     def _authenticate(self) -> bool:
         """Authenticate with EPO OPS API using OAuth 2.0"""
@@ -347,17 +347,17 @@ class EPOPatentFetcher:
                 })
                 
                 if self.verbose:
-                    print(f"  ✓ EPO authenticated - token expires in {expires_in}s")
+                    print(f"   EPO authenticated - token expires in {expires_in}s")
                 
                 return True
             else:
                 if self.verbose:
-                    print(f"  ✗ Authentication failed: {response.status_code}")
+                    print(f"  Authentication failed: {response.status_code}")
                 return False
         
         except Exception as e:
             if self.verbose:
-                print(f"  ✗ Authentication error: {e}")
+                print(f"   Authentication error: {e}")
             return False
     
     def _check_token_expiry(self) -> bool:
@@ -397,7 +397,7 @@ class EPOPatentFetcher:
         """
         if not query or not query.strip():
             if self.verbose:
-                print("❌ Empty query provided")
+                print(" Empty query provided")
             return []
         
         # Check authentication
@@ -444,7 +444,7 @@ class EPOPatentFetcher:
                     return []
                 
                 if self.verbose:
-                    print(f"  ✓ Found {len(basic_patents)} patents")
+                    print(f"   Found {len(basic_patents)} patents")
                 
                 # Step 2: Fetch full details for TOP N patents only
                 enhanced_patents = []
@@ -456,7 +456,7 @@ class EPOPatentFetcher:
                         if full_details:
                             patent.update(full_details)
                             if self.verbose:
-                                print(f"    ✓ Enhanced {i+1}/{fetch_details_count}: {patent['patent_number']}")
+                                print(f"  Enhanced {i+1}/{fetch_details_count}: {patent['patent_number']}")
                     
                     enhanced_patents.append(patent)
                 
@@ -502,22 +502,22 @@ class EPOPatentFetcher:
                 pub_refs = [pub_refs] if pub_refs else []
             
             for pub_ref in pub_refs:
-                # ✅ Extract basic patent info from document-id
+                #  Extract basic patent info from document-id
                 document = pub_ref.get('document-id', {})
                 
-                # ✅ Get country code (e.g., "WO", "US", "EP")
+                #  Get country code (e.g., "WO", "US", "EP")
                 country = document.get('country', {}).get('$', 'N/A')
                 
-                # ✅ Get document number (e.g., "2025227064")
+                #  Get document number (e.g., "2025227064")
                 doc_number = document.get('doc-number', {}).get('$', 'N/A')
                 
-                # ✅ Get kind code (e.g., "A1", "B2")
+                #  Get kind code (e.g., "A1", "B2")
                 kind = document.get('kind', {}).get('$', '')
                 
-                # ✅ Combine into full patent number
+                #  Combine into full patent number
                 patent_number = f"{country}{doc_number}{kind}"
                 
-                # ✅ Create basic patent record (details filled later for top 5)
+                #  Create basic patent record (details filled later for top 5)
                 patent = {
                     'patent_number': patent_number,
                     'title': f"Patent {patent_number}",  # Placeholder until biblio fetch
@@ -535,7 +535,7 @@ class EPOPatentFetcher:
         
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ Parse error: {e}")
+                print(f"   Parse error: {e}")
         
         return patents
     
@@ -695,7 +695,7 @@ class EPOPatentFetcher:
         
         except Exception as e:
             if self.verbose:
-                print(f"    ⚠ Biblio fetch failed: {e}")
+                print(f"   Biblio fetch failed: {e}")
             return {}
   
     def _generate_mock_patents(self, query: str, count: int) -> List[Dict]:
@@ -889,14 +889,14 @@ class UNComtradeFetcher(DataFetcher):
                 # Rate limit handling
                 if response.status_code == 429:
                     if self.verbose:
-                        print("  ⚠ UN Comtrade rate limit hit, waiting 10 seconds...")
+                        print("   UN Comtrade rate limit hit, waiting 10 seconds...")
                     time.sleep(10)
                     response = self.session.get(url, params=params, timeout=30)
 
                 # Debug bad requests
                 if response.status_code != 200:
                     if self.verbose:
-                        print(f"  ⚠ Status: {response.status_code}")
+                        print(f"   Status: {response.status_code}")
                         print(f"  Response: {response.text[:200]}")
                     continue  # Skip and try next country
 
@@ -906,23 +906,23 @@ class UNComtradeFetcher(DataFetcher):
                 if records:
                     all_records.extend(records)
                     if self.verbose:
-                        print(f"  ✓ Retrieved {len(records)} trade records")
+                        print(f"   Retrieved {len(records)} trade records")
 
             if self.verbose:
                 if all_records:
-                    print(f"  ✓ Total: {len(all_records)} records from UN Comtrade")
+                    print(f"   Total: {len(all_records)} records from UN Comtrade")
                 else:
-                    print(f"  ⚠ No data returned from UN Comtrade")
+                    print(f"   No data returned from UN Comtrade")
 
             return all_records[:50]
 
         except requests.exceptions.RequestException as e:
             if self.verbose:
-                print(f"  ✗ UN Comtrade API error: {e}")
+                print(f"  UN Comtrade API error: {e}")
             return []
         except Exception as e:
             if self.verbose:
-                print(f"  ✗ Unexpected error in UN Comtrade: {e}")
+                print(f"  Unexpected error in UN Comtrade: {e}")
             return []
 
 
@@ -974,7 +974,7 @@ class WorldBankTradeFetcher(DataFetcher):
                 records = data[1]  # Second element is the data
 
                 if self.verbose:
-                    print(f"  ✓ Retrieved {len(records)} records from World Bank")
+                    print(f"   Retrieved {len(records)} records from World Bank")
 
                 return records
 
@@ -982,11 +982,11 @@ class WorldBankTradeFetcher(DataFetcher):
 
         except requests.exceptions.RequestException as e:
             if self.verbose:
-                print(f"  ✗ World Bank API error: {e}")
+                print(f"   World Bank API error: {e}")
             return []
         except Exception as e:
             if self.verbose:
-                print(f"  ✗ Unexpected error in World Bank: {e}")
+                print(f"   Unexpected error in World Bank: {e}")
             return []
 
 
@@ -1000,9 +1000,9 @@ class RealEXIMDataFetcher:
         self.verbose = verbose
         self.un_comtrade = UNComtradeFetcher(verbose=verbose)
         self.world_bank = WorldBankTradeFetcher(verbose=verbose)
-        # ✅ USITC removed completely
+        #  USITC removed completely
 
-    def get_comprehensive_trade_data(
+    def get_omprehensive_trade_data(
         self, drug_name: str, country: str = None
     ) -> Dict[str, any]:
         """
@@ -1037,9 +1037,9 @@ class RealEXIMDataFetcher:
                 result["data_sources"].append("UN Comtrade")
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ UN Comtrade failed: {e}")
+                print(f"   UN Comtrade failed: {e}")
 
-        # ✅ FIXED: Always try World Bank (not conditional)
+        #  FIXED: Always try World Bank (not conditional)
         try:
             country_code = country if country else "WLD"  # WLD = World aggregate
 
@@ -1067,15 +1067,15 @@ class RealEXIMDataFetcher:
                 result["world_bank_data"] = wb_data
                 result["data_sources"].append("World Bank")
                 if self.verbose:
-                    print(f"  ✓ World Bank: {len(wb_data)} records retrieved")
+                    print(f"   World Bank: {len(wb_data)} records retrieved")
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ World Bank failed: {e}")
+                print(f"   World Bank failed: {e}")
 
         # Generate summary
         if not result["data_sources"]:
             if self.verbose:
-                print("  ⚠ No real trade data available from any API")
+                print("   No real trade data available from any API")
             result["summary"] = (
                 "No trade data available - APIs failed or returned empty"
             )
@@ -1085,7 +1085,7 @@ class RealEXIMDataFetcher:
             )
 
         if self.verbose:
-            print(f"  ✓ {result['summary']}")
+            print(f"  {result['summary']}")
 
         return result
 

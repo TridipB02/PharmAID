@@ -36,7 +36,7 @@ class EXIMAgent:
         self.mock_fetcher = get_mock_data_fetcher()
 
         if self.verbose:
-            print("✓ EXIM Agent initialized with real API sources")
+            print(" EXIM Agent initialized with real API sources")
             print("  - UN Comtrade API")
             print("  - World Bank API")
             print("  - USITC DataWeb API")
@@ -103,7 +103,7 @@ class EXIMAgent:
 
         if self.verbose:
             print(
-                f"✓ Analysis complete - {len(results['drug_analyses'])} drugs analyzed"
+                f" Analysis complete - {len(results['drug_analyses'])} drugs analyzed"
             )
             print(f"  Data sources used: {', '.join(results['data_sources_used'])}")
 

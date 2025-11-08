@@ -80,8 +80,8 @@ class MasterAgentOrchestrator:
         self.worker_agents = self._initialize_worker_agents()
 
         if self.verbose:
-            print("✓ Master Agent initialized successfully")
-            print(f"✓ Available worker agents: {list(self.worker_agents.keys())}")
+            print(" Master Agent initialized successfully")
+            print(f" Available worker agents: {list(self.worker_agents.keys())}")
 
     def _initialize_llm(self) -> ChatOllama:
         """Initialize Ollama LLM"""
@@ -93,10 +93,10 @@ class MasterAgentOrchestrator:
                 num_predict=3000,
             )
             if self.verbose:
-                print(f"✓ LLM initialized: {OLLAMA_CONFIG['model']}")
+                print(f" LLM initialized: {OLLAMA_CONFIG['model']}")
             return llm
         except Exception as e:
-            print(f"✗ Error initializing LLM: {e}")
+            print(f" Error initializing LLM: {e}")
             raise
 
     def _initialize_worker_agents(self) -> Dict[str, Any]:
@@ -113,63 +113,63 @@ class MasterAgentOrchestrator:
             try:
                 agents["iqvia"] = IQVIAAgent()
                 if self.verbose:
-                    print("✓ IQVIA Agent loaded")
+                    print(" IQVIA Agent loaded")
             except Exception as e:
-                print(f"✗ Failed to load IQVIA Agent: {e}")
+                print(f" Failed to load IQVIA Agent: {e}")
 
         # Initialize EXIM Agent
         if EXIMAgent:
             try:
                 agents["exim"] = EXIMAgent()
                 if self.verbose:
-                    print("✓ EXIM Agent loaded")
+                    print(" EXIM Agent loaded")
             except Exception as e:
-                print(f"✗ Failed to load EXIM Agent: {e}")
+                print(f" Failed to load EXIM Agent: {e}")
 
         # Initialize Patent Agent
         if PatentAgent:
             try:
                 agents["patent"] = PatentAgent()
                 if self.verbose:
-                    print("✓ Patent Agent loaded")
+                    print(" Patent Agent loaded")
             except Exception as e:
-                print(f"✗ Failed to load Patent Agent: {e}")
+                print(f" Failed to load Patent Agent: {e}")
 
         # Initialize Clinical Trials Agent
         if ClinicalTrialsAgent:
             try:
                 agents["clinical_trials"] = ClinicalTrialsAgent()
                 if self.verbose:
-                    print("✓ Clinical Trials Agent loaded")
+                    print(" Clinical Trials Agent loaded")
             except Exception as e:
-                print(f"✗ Failed to load Clinical Trials Agent: {e}")
+                print(f" Failed to load Clinical Trials Agent: {e}")
 
         # Initialize Web Intelligence Agent
         if WebIntelligenceAgent:
             try:
                 agents["web_intelligence"] = WebIntelligenceAgent()
                 if self.verbose:
-                    print("✓ Web Intelligence Agent loaded")
+                    print(" Web Intelligence Agent loaded")
             except Exception as e:
-                print(f"✗ Failed to load Web Intelligence Agent: {e}")
+                print(f" Failed to load Web Intelligence Agent: {e}")
 
         # Initialize Internal Knowledge Agent
         if InternalKnowledgeAgent:
             try:
                 agents["internal_knowledge"] = InternalKnowledgeAgent()
                 if self.verbose:
-                    print("✓ Internal Knowledge Agent loaded")
+                    print(" Internal Knowledge Agent loaded")
             except Exception as e:
-                print(f"✗ Failed to load Internal Knowledge Agent: {e}")
+                print(f" Failed to load Internal Knowledge Agent: {e}")
 
         # Initialize Drug Database Agent
         if DrugDatabaseAgent:
             try:
                 agents["drug_database"] = DrugDatabaseAgent()
                 if self.verbose:
-                    print("✓ Drug Database Agent loaded")
+                    print(" Drug Database Agent loaded")
             except Exception as e:
-                print(f"✗ Failed to load Drug Database Agent: {e}")
+                print(f" Failed to load Drug Database Agent: {e}")
 
         return agents
 
@@ -251,7 +251,7 @@ Example:
                 parsed = self._validate_and_fix_agents(user_query, parsed)
 
                 if self.verbose:
-                    print(f"✓ Query parsed successfully")
+                    print(f"  Query parsed successfully")
                     print(f"  Intent: {parsed.get('intent', 'unknown')}")
                     print(f"  Entities: {parsed.get('entities', {})}")
                     print(f"  Required Agents: {parsed.get('required_agents', [])}")
@@ -259,12 +259,12 @@ Example:
             else:
                 # Fallback to keyword-based parsing
                 if self.verbose:
-                    print("⚠ LLM parsing failed, using fallback method")
+                    print(" LLM parsing failed, using fallback method")
                 return self._fallback_parsing(user_query)
 
         except Exception as e:
             if self.verbose:
-                print(f"✗ Error in LLM parsing: {e}")
+                print(f" Error in LLM parsing: {e}")
             return self._fallback_parsing(user_query)
 
     def _validate_and_fix_agents(
@@ -301,7 +301,7 @@ Example:
             if "clinical_trials" not in required_agents:
                 required_agents.add("clinical_trials")
                 if self.verbose:
-                    print("  ✓ Added 'clinical_trials' agent (detected from keywords)")
+                    print("  Added 'clinical_trials' agent (detected from keywords)")
 
         # Check for market keywords
         if any(
@@ -319,7 +319,7 @@ Example:
             if "iqvia" not in required_agents:
                 required_agents.add("iqvia")
                 if self.verbose:
-                    print("  ✓ Added 'iqvia' agent (detected from keywords)")
+                    print("  Added 'iqvia' agent (detected from keywords)")
 
         # Check for patent keywords
         if any(
@@ -329,7 +329,7 @@ Example:
             if "patent" not in required_agents:
                 required_agents.add("patent")
                 if self.verbose:
-                    print("  ✓ Added 'patent' agent (detected from keywords)")
+                    print("  Added 'patent' agent (detected from keywords)")
 
         # Check for trade keywords
         if any(
@@ -339,7 +339,7 @@ Example:
             if "exim" not in required_agents:
                 required_agents.add("exim")
                 if self.verbose:
-                    print("  ✓ Added 'exim' agent (detected from keywords)")
+                    print("  Added 'exim' agent (detected from keywords)")
 
         # Check for literature keywords
         if any(
@@ -356,7 +356,7 @@ Example:
             if "web_intelligence" not in required_agents:
                 required_agents.add("web_intelligence")
                 if self.verbose:
-                    print("  ✓ Added 'web_intelligence' agent (detected from keywords)")
+                    print("  Added 'web_intelligence' agent (detected from keywords)")
 
         # Update parsed dictionary
         parsed["required_agents"] = list(required_agents)
@@ -749,7 +749,7 @@ Example:
             }
             tasks.append(task)
         if self.verbose:
-            print(f"✓ Task created: Drug Database Enrichment (Priority 0)")
+            print(f"Task created: Drug Database Enrichment (Priority 0)")
 
         # IQVIA Agent tasks
         if "iqvia" in required_agents and "iqvia" in self.worker_agents:
@@ -766,7 +766,7 @@ Example:
             }
             tasks.append(task)
             if self.verbose:
-                print(f"✓ Task created: IQVIA Market Analysis")
+                print(f" Task created: IQVIA Market Analysis")
 
         # EXIM Agent tasks
         if "exim" in required_agents and "exim" in self.worker_agents:
@@ -782,9 +782,9 @@ Example:
             }
             tasks.append(task)
             if self.verbose:
-                print(f"✓ Task created: EXIM Trade Analysis")
+                print(f"Task created: EXIM Trade Analysis")
 
-        # Patent Agent tasks - ⚡ REDUCED to 10
+        # Patent Agent tasks -  REDUCED to 10
         if "patent" in required_agents and "patent" in self.worker_agents:
             task = {
                 "agent": "patent",
@@ -793,15 +793,15 @@ Example:
                 "params": {
                     "drugs": entities.get("drugs", []),
                     "keywords": parsed_query.get("keywords", []),
-                    "max_results": 10,  # ⚡ CHANGED from 20
+                    "max_results": 10,  #  CHANGED from 20
                 },
                 "priority": 1,
             }
             tasks.append(task)
             if self.verbose:
-                print(f"✓ Task created: Patent Landscape Analysis")
+                print(f" Task created: Patent Landscape Analysis")
 
-        # Clinical Trials Agent tasks - ⚡ REDUCED to 10
+        # Clinical Trials Agent tasks -  REDUCED to 10
         if (
             "clinical_trials" in required_agents
             and "clinical_trials" in self.worker_agents
@@ -814,15 +814,15 @@ Example:
                     "drugs": entities.get("drugs", []),
                     "diseases": entities.get("diseases", []),
                     "therapeutic_areas": entities.get("therapeutic_areas", []),
-                    "max_results": 10,  # ⚡ CHANGED from 20
+                    "max_results": 10,  #  CHANGED from 20
                 },
                 "priority": 1,
             }
             tasks.append(task)
             if self.verbose:
-                print(f"✓ Task created: Clinical Trials Search")
+                print(f" Task created: Clinical Trials Search")
 
-        # Web Intelligence Agent tasks - ⚡ REDUCED to 10
+        # Web Intelligence Agent tasks -  REDUCED to 10
         if (
             "web_intelligence" in required_agents
             and "web_intelligence" in self.worker_agents
@@ -834,13 +834,13 @@ Example:
                 "params": {
                     "keywords": parsed_query.get("keywords", []),
                     "drugs": entities.get("drugs", []),
-                    "max_results": 10,  # ⚡ CHANGED from 20
+                    "max_results": 10,  #  CHANGED from 20
                 },
                 "priority": 3,
             }
             tasks.append(task)
             if self.verbose:
-                print(f"✓ Task created: Literature Search")
+                print(f"Task created: Literature Search")
 
         # Internal Knowledge Agent tasks
         if (
@@ -856,7 +856,7 @@ Example:
             }
             tasks.append(task)
             if self.verbose:
-                print(f"✓ Task created: Internal Knowledge Search")
+                print(f" Task created: Internal Knowledge Search")
 
         tasks.sort(key=lambda x: x.get("priority", 99))
 
@@ -1216,7 +1216,7 @@ QUERY: "{original_query}"
 DATA FROM AGENTS:
 {''.join(compiled_data)}
 
-🎯 CRITICAL DISPLAY RULES:
+ CRITICAL DISPLAY RULES:
 
 1. **Top 5 Rule**: Show FULL DETAILS for items 1-5 ONLY
 2. **Summary Rule**: For items 6+, look for the _summary field and display it VERBATIM (don't add brackets)
@@ -1239,7 +1239,7 @@ FORMAT:
 ## Detailed Findings
 [FOR EACH SECTION BELOW: Only include if that agent's data appears above]
 
-### 📊 Market Analysis
+###  Market Analysis
 [ONLY IF "IQVIA AGENT" appears in data above]
 [If IQVIA not present: SKIP THIS ENTIRE SECTION]
 **Drug:** [Extract from drug_analyses[0].drug_name]
@@ -1248,7 +1248,7 @@ FORMAT:
 
 ---
 
-### 🌍 Trade Analysis
+###  Trade Analysis
 [ONLY IF "EXIM AGENT" appears in data above]
 [If EXIM not present: SKIP THIS ENTIRE SECTION]
 **Balance:** [trade_balance] | **Sources:** [data_sources]
@@ -1264,7 +1264,7 @@ FORMAT:
 
 ---
 
-### 🔬 Clinical Trials
+###  Clinical Trials
 [ONLY IF "CLINICAL_TRIALS AGENT" appears in data above]
 [If Clinical Trials not present: SKIP THIS ENTIRE SECTION]
 **Stats:** Total: [total_trials_found] | Active: [active] | Phase 3: [count]
@@ -1292,7 +1292,7 @@ FORMAT:
 
 ---
 
-### 📜 Patents (ONLY if PATENT AGENT data exists above)
+###  Patents (ONLY if PATENT AGENT data exists above)
 **Stats:** Total: [total_patents_found] | Expiring Soon: [expiring_soon_count] | FTO Risk: [risk_level]
 
 **Top 5 Patents:**
@@ -1313,7 +1313,7 @@ FORMAT:
 
 ---
 
-### 📚 Literature (ONLY if WEB_INTELLIGENCE AGENT data exists above)
+###  Literature (ONLY if WEB_INTELLIGENCE AGENT data exists above)
 **Total:** [total_publications_found] publications
 
 **Top 5 Publications - FULL DETAILS:**
@@ -1343,7 +1343,7 @@ FORMAT:
 [List agents that actually ran and their record counts]
 ---
 
-⚠️ CRITICAL RULES:
+ CRITICAL RULES:
 - Items 1-5: Show FULL details
 - Items 6+: Copy the _summary field VERBATIM (don't add brackets)
 - If _summary doesn't exist: Write "See visualization for complete details"
@@ -1357,7 +1357,7 @@ Write the report now:"""
             synthesized = response.content
 
             if self.verbose:
-                print(f"✓ Response synthesized with TOP 5 strategy")
+                print(f" Response synthesized with TOP 5 strategy")
             return synthesized
 
         except Exception as e:
@@ -1827,7 +1827,7 @@ Write the report now:"""
         """Clear query history"""
         self.query_history = []
         if self.verbose:
-            print("✓ Query history cleared")
+            print(" Query history cleared")
 
     def get_latest_query(self) -> Optional[Dict[str, Any]]:
         """Get the most recent query result"""
@@ -1839,9 +1839,9 @@ Write the report now:"""
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(self.query_history, f, indent=2, ensure_ascii=False)
             if self.verbose:
-                print(f"✓ History exported to {filepath}")
+                print(f" History exported to {filepath}")
         except Exception as e:
-            print(f"✗ Error exporting history: {e}")
+            print(f" Error exporting history: {e}")
 
     def get_statistics(self) -> Dict[str, Any]:
         """Get statistics about query processing"""
@@ -1954,7 +1954,7 @@ if __name__ == "__main__":
     print("\nParsed Query:")
     print(json.dumps(parsed_2, indent=2))
     print(f"\nRequired Agents: {parsed_2['required_agents']}")
-    print("✓ Should include both 'clinical_trials' AND 'iqvia'")
+    print(" Should include both 'clinical_trials' AND 'iqvia'")
 
     print("\n" + "=" * 70)
     print("TEST 3: Full Query Processing")
@@ -1978,6 +1978,6 @@ if __name__ == "__main__":
     print("MASTER AGENT TEST COMPLETED")
     print("=" * 70)
 
-    print("\n✓ All tests completed successfully!")
+    print("\n All tests completed successfully!")
     print("\nKey Improvement: Agent validation now ensures correct agents are called")
     print("even if LLM makes mistakes in agent selection!")

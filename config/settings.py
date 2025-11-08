@@ -112,14 +112,14 @@ REPORT_CONFIG = {
     "format": "pdf",
     "include_charts": True,
     "include_tables": True,
-    "watermark": "Pharma Innovation AI - Confidential",
+    "watermark": "PharmAID - Confidential",
     "max_pages": 50,
 }
 
 # Streamlit UI Configuration
 UI_CONFIG = {
-    "page_title": "Pharma Agentic AI - Portfolio Planning Assistant",
-    "page_icon": "💊",
+    "page_title": "PharmAID - Portfolio Planning Assistant",
+    "page_icon": "",
     "layout": "wide",
     "initial_sidebar_state": "expanded",
 }

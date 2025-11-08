@@ -1,6 +1,6 @@
 """
 Enhanced Report Generator Agent - Professional PDF with Charts
-STANDALONE VERSION - Copy this ENTIRE file to agents/report_generator_agent.py
+STANDALONE VERSION 
 """
 
 import json
@@ -29,10 +29,10 @@ try:
         Table, TableStyle, Image, HRFlowable
     )
     REPORTLAB_AVAILABLE = True
-    print("✓ ReportLab imported successfully")
+    print(" ReportLab imported successfully")
 except ImportError as e:
     REPORTLAB_AVAILABLE = False
-    print(f"✗ ReportLab import failed: {e}")
+    print(f" ReportLab import failed: {e}")
 
 try:
     import matplotlib
@@ -40,10 +40,10 @@ try:
     import matplotlib.pyplot as plt
     import seaborn as sns
     MATPLOTLIB_AVAILABLE = True
-    print("✓ Matplotlib imported successfully")
+    print(" Matplotlib imported successfully")
 except ImportError as e:
     MATPLOTLIB_AVAILABLE = False
-    print(f"✗ Matplotlib import failed: {e}")
+    print(f" Matplotlib import failed: {e}")
 
 
 class ProfessionalReportGenerator:
@@ -57,11 +57,11 @@ class ProfessionalReportGenerator:
         try:
             self.reports_directory.mkdir(exist_ok=True, parents=True)
             if self.verbose:
-                print(f"✓ Reports directory: {self.reports_directory}")
+                print(f" Reports directory: {self.reports_directory}")
                 print(f"  Exists: {self.reports_directory.exists()}")
                 print(f"  Writable: {self.reports_directory.is_dir()}")
         except Exception as e:
-            print(f"✗ Error with reports directory: {e}")
+            print(f" Error with reports directory: {e}")
             # Fallback
             self.reports_directory = Path("./reports")
             self.reports_directory.mkdir(exist_ok=True, parents=True)
@@ -76,7 +76,7 @@ class ProfessionalReportGenerator:
                 pass
         
         if self.verbose:
-            print(f"✓ Report Generator initialized")
+            print(f" Report Generator initialized")
             print(f"  ReportLab: {REPORTLAB_AVAILABLE}")
             print(f"  Matplotlib: {MATPLOTLIB_AVAILABLE}")
 
@@ -131,19 +131,19 @@ class ProfessionalReportGenerator:
                 result["generation_time"] = (datetime.now() - start_time).total_seconds()
 
                 if self.verbose:
-                    print(f"✓ Report generated: {filename}")
+                    print(f" Report generated: {filename}")
                     print(f"  Size: {result['size_mb']} MB")
                     print(f"  Time: {result['generation_time']:.2f}s")
             else:
                 result["error"] = "Report file was not created"
                 if self.verbose:
-                    print(f"✗ File not created: {filepath}")
+                    print(f" File not created: {filepath}")
                     print(f"  Exists: {filepath.exists()}")
 
         except Exception as e:
             result["error"] = str(e)
             if self.verbose:
-                print(f"✗ Error: {e}")
+                print(f" Error: {e}")
                 import traceback
                 traceback.print_exc()
 
@@ -154,7 +154,7 @@ class ProfessionalReportGenerator:
         
         if not REPORTLAB_AVAILABLE:
             if self.verbose:
-                print("⚠ ReportLab not available, using text fallback")
+                print(" ReportLab not available, using text fallback")
             return self._generate_text(filepath, query, agent_responses, synthesized_response)
 
         try:
@@ -222,14 +222,14 @@ class ProfessionalReportGenerator:
             doc.build(elements, onFirstPage=self._add_page_num, onLaterPages=self._add_page_num)
             
             if self.verbose:
-                print(f"  ✓ PDF built")
+                print(f"  PDF built")
                 print(f"  File exists: {filepath.exists()}")
             
             return filepath.exists()
 
         except Exception as e:
             if self.verbose:
-                print(f"  ✗ PDF error: {e}")
+                print(f"  PDF error: {e}")
                 import traceback
                 traceback.print_exc()
             
@@ -398,7 +398,7 @@ class ProfessionalReportGenerator:
         # Metadata table
         metadata = [
             ['Generated:', datetime.now().strftime("%B %d, %Y at %H:%M")],
-            ['Powered By:', 'Pharma Agentic AI Platform'],
+            ['Powered By:', 'PharmAID Platform'],
         ]
         
         table = Table(metadata, colWidths=[2*inch, 3.5*inch])
@@ -519,7 +519,7 @@ class ProfessionalReportGenerator:
         
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ IQVIA chart error: {e}")
+                print(f"   IQVIA chart error: {e}")
         
         return charts
 
@@ -587,7 +587,7 @@ class ProfessionalReportGenerator:
         
         except Exception as e:
             if self.verbose:
-                print(f"  ⚠ CT chart error: {e}")
+                print(f"  CT chart error: {e}")
         
         return charts
 
@@ -1130,7 +1130,7 @@ class ProfessionalReportGenerator:
             return txt_path.exists()
         except Exception as e:
             if self.verbose:
-                print(f"✗ Text generation error: {e}")
+                print(f"Text generation error: {e}")
             return False
 
     def _generate_excel(self, filepath, query, agent_responses, synthesized_response):
@@ -1153,7 +1153,7 @@ class ProfessionalReportGenerator:
             return filepath.exists()
         except Exception as e:
             if self.verbose:
-                print(f"✗ Excel error: {e}")
+                print(f" Excel error: {e}")
             return False
 
 

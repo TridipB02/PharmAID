@@ -40,7 +40,7 @@ class InternalKnowledgeAgent:
         self.docs_directory.mkdir(exist_ok=True, parents=True)
 
         if self.verbose:
-            print("✓ Internal Knowledge Agent initialized")
+            print(" Internal Knowledge Agent initialized")
             print(f"  Documents directory: {self.docs_directory}")
 
     def search_internal(
@@ -77,7 +77,7 @@ class InternalKnowledgeAgent:
                 "No internal documents available in the knowledge base."
             )
             if self.verbose:
-                print("  ⚠ No documents found in internal directory")
+                print("  No documents found in internal directory")
             return results
 
         # Filter documents by keywords and type
@@ -98,7 +98,7 @@ class InternalKnowledgeAgent:
 
         if self.verbose:
             print(
-                f"✓ Search complete - {results['total_documents_found']} documents found"
+                f" Search complete - {results['total_documents_found']} documents found"
             )
 
         return results
@@ -246,7 +246,7 @@ class InternalKnowledgeAgent:
                         )
                 except Exception as e:
                     if self.verbose:
-                        print(f"  ⚠ Could not read {doc['filename']}: {e}")
+                        print(f"   Could not read {doc['filename']}: {e}")
             else:
                 # For PDFs and other formats, just note the document
                 excerpts.append(
@@ -462,4 +462,4 @@ Next Steps:
     print(f"\nDocument Summary:")
     print(json.dumps(doc_summary, indent=2))
 
-    print("\n✓ All Internal Knowledge Agent tests completed!")
+    print("\n All Internal Knowledge Agent tests completed!")

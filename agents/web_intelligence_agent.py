@@ -38,7 +38,7 @@ class WebIntelligenceAgent:
         self.fda_fetcher = OpenFDAFetcher()
 
         if self.verbose:
-            print("✓ Web Intelligence Agent initialized")
+            print(" Web Intelligence Agent initialized")
 
     def search_literature(
         self, keywords: List[str] = None, drugs: List[str] = None, max_results: int = 20
@@ -125,7 +125,7 @@ class WebIntelligenceAgent:
 
         if self.verbose:
             print(
-                f"✓ Search complete - {results['total_publications_found']} publications found"
+                f" Search complete - {results['total_publications_found']} publications found"
             )
 
         return results
@@ -484,4 +484,4 @@ if __name__ == "__main__":
     )
     print(json.dumps(comparison, indent=2))
 
-    print("\n✓ All Web Intelligence Agent tests completed!")
+    print("\n All Web Intelligence Agent tests completed!")

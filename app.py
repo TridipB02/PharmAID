@@ -127,7 +127,7 @@ def initialize_session_state():
 def render_header():
     """Render the main header"""
     st.markdown(
-        '<h1 class="main-header">💊 Pharma Agentic AI</h1>', unsafe_allow_html=True
+        '<h1 class="main-header"> PharmAID</h1>', unsafe_allow_html=True
     )
     st.markdown(
         '<p style="text-align: center; color: #666; font-size: 1.1rem;">Pharmaceutical Intelligence Platform</p>',
@@ -139,10 +139,10 @@ def render_header():
 # Sidebar
 def render_sidebar():
     """Render the sidebar with options"""
-    st.sidebar.title("⚙️ Settings")
+    st.sidebar.title(" Settings")
 
     # Sample queries
-    st.sidebar.subheader("📝 Sample Queries")
+    st.sidebar.subheader(" Sample Queries")
     st.sidebar.write("Try these example queries:")
 
     selected_sample = st.sidebar.selectbox(
@@ -155,7 +155,7 @@ def render_sidebar():
     st.sidebar.markdown("---")
 
     # Query history
-    st.sidebar.subheader("📜 Query History")
+    st.sidebar.subheader(" Query History")
     if st.session_state.query_history:
         st.sidebar.write(f"Total queries: {len(st.session_state.query_history)}")
         if st.sidebar.button("Clear History"):
@@ -167,16 +167,16 @@ def render_sidebar():
     st.sidebar.markdown("---")
 
     # System status
-    st.sidebar.subheader("🚀 System Status")
-    st.sidebar.success("✅ Ollama Connected")
-    st.sidebar.success("✅ APIs Ready")
+    st.sidebar.subheader(" System Status")
+    st.sidebar.success(" Ollama Connected")
+    st.sidebar.success(" APIs Ready")
     st.sidebar.info(f"Model: llama3.1:8b")
 
 
 # Main query interface
 def render_query_interface():
     """Render the main query interface"""
-    st.subheader("🔍 Ask Your Strategic Question")
+    st.subheader(" Ask Your Strategic Question")
 
     # Check if sample query was selected
     default_query = ""
@@ -197,7 +197,7 @@ def render_query_interface():
     col1, col2, col3 = st.columns([2, 1, 2])
     with col2:
         submit_button = st.button(
-            "🚀 Submit Query", type="primary", use_container_width=True
+            " Submit Query", type="primary", use_container_width=True
         )
 
     if submit_button and user_query.strip():
@@ -206,7 +206,7 @@ def render_query_interface():
 
 def process_query(user_query: str):
     """Process the user query"""
-    with st.spinner("🔄 Processing your query... This may take a moment."):
+    with st.spinner(" Processing your query... This may take a moment."):
         try:
             # Get master agent
             master_agent = st.session_state.master_agent
@@ -224,10 +224,10 @@ def process_query(user_query: str):
                 }
             )
 
-            st.success("✅ Query processed successfully!")
+            st.success(" Query processed successfully!")
 
         except Exception as e:
-            st.error(f"❌ Error processing query: {str(e)}")
+            st.error(f" Error processing query: {str(e)}")
             st.exception(e)
 
 
@@ -235,7 +235,7 @@ def render_response():
     """Render unified summary - everything in ONE section"""
     if st.session_state.current_response is None:
         # Show helpful information card
-        st.markdown("### 🎯 Pharmaceutical Intelligence Capabilities")
+        st.markdown("###  Pharmaceutical Intelligence Capabilities")
         
         st.info("""
         **Ask questions about:**
@@ -254,7 +254,7 @@ def render_response():
     # SINGLE "SUMMARY" SECTION WITH EVERYTHING
     # =============================================
     
-    st.markdown("## 📋 Summary")
+    st.markdown("##  Summary")
     
     # Show the query
     st.markdown(
@@ -263,7 +263,7 @@ def render_response():
     )
 
     # Query analysis (collapsed by default)
-    with st.expander("🔍 View Query Analysis", expanded=False):
+    with st.expander(" View Query Analysis", expanded=False):
         parsed = response.get("parsed_query", {})
         col1, col2 = st.columns(2)
         with col1:
@@ -319,20 +319,20 @@ def render_response():
     # =============================================
     # EXPORT OPTIONS (AT END)
     # =============================================
-    st.markdown("### 📥 Export Options")
+    st.markdown("###  Export Options")
     
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("📄 Generate PDF Report", use_container_width=True):
+        if st.button(" Generate PDF Report", use_container_width=True):
             generate_professional_pdf_report(response)
 
     with col2:
-        if st.button("📊 Generate Excel", use_container_width=True):
+        if st.button(" Generate Excel", use_container_width=True):
             generate_excel_report(response)
 
     with col3:
-        if st.button("🔄 New Query", use_container_width=True):
+        if st.button(" New Query", use_container_width=True):
             st.session_state.current_response = None
             st.rerun()
 
@@ -345,7 +345,7 @@ def render_iqvia_inline(data: Dict):
     if not drug_analyses:
         return
     
-    st.markdown(f"#### 💰 Market Analysis ({len(drug_analyses)} Drugs)")
+    st.markdown(f"####  Market Analysis ({len(drug_analyses)} Drugs)")
     
     # Create DataFrame
     market_df = pd.DataFrame([{
@@ -398,7 +398,7 @@ def render_clinical_trials_inline(data: Dict):
     if total == 0:
         return
     
-    st.markdown(f"#### 🔬 Clinical Trials ({total} Trials)")
+    st.markdown(f"####  Clinical Trials ({total} Trials)")
     
     # Metrics
     col1, col2, col3 = st.columns(3)
@@ -451,7 +451,7 @@ def render_patent_inline(data: Dict):
     if total == 0:
         return
     
-    st.markdown(f"#### 📜 Patent Landscape ({total} Patents)")
+    st.markdown(f"####  Patent Landscape ({total} Patents)")
     
     # Metrics
     col1, col2, col3, col4 = st.columns(4)
@@ -519,7 +519,7 @@ def render_exim_inline(data: Dict):
     if not drug_analyses:
         return
     
-    st.markdown(f"#### 🌍 Trade Analysis ({len(drug_analyses)} Drugs)")
+    st.markdown(f"####  Trade Analysis ({len(drug_analyses)} Drugs)")
     
     # Create DataFrame
     trade_df = pd.DataFrame([{
@@ -556,7 +556,7 @@ def render_literature_inline(data: Dict):
     if total == 0:
         return
     
-    st.markdown(f"#### 📚 Scientific Literature ({total} Publications)")
+    st.markdown(f"####  Scientific Literature ({total} Publications)")
     
     st.metric("Total Publications", total)
     
@@ -577,7 +577,7 @@ def render_literature_inline(data: Dict):
 
 def generate_professional_pdf_report(response: Dict):
     """Generate PROFESSIONAL PDF report with enhanced charts - CLEAN VERSION"""
-    with st.spinner("🎨 Generating professional PDF report..."):
+    with st.spinner(" Generating professional PDF report..."):
         try:
             # Import the ENHANCED report generator
             from agents.report_generator_agent import get_report_generator_agent
@@ -599,11 +599,11 @@ def generate_professional_pdf_report(response: Dict):
                     pdf_data = f.read()
                 
                 # Show simple success message
-                st.success("✅ PDF Report Generated Successfully!")
+                st.success(" PDF Report Generated Successfully!")
                 
                 # Download button only
                 st.download_button(
-                    label="📥 Download Professional PDF Report",
+                    label=" Download Professional PDF Report",
                     data=pdf_data,
                     file_name=result["filename"],
                     mime="application/pdf",
@@ -611,13 +611,12 @@ def generate_professional_pdf_report(response: Dict):
                 )
                 
             else:
-                st.error(f"❌ Error generating report: {result.get('error', 'Unknown error')}")
-                
-                # Show detailed error info in expander
-                with st.expander("🔍 Detailed Error Information"):
+                st.error(f" Error generating report: {result.get('error', 'Unknown error')}")
+            
+                with st.expander(" Detailed Error Information"):
                     st.json(result)
                 
-                with st.expander("🔧 Installation Instructions"):
+                with st.expander(" Installation Instructions"):
                     st.code("""
                             pip install reportlab matplotlib seaborn
                             # Or install all requirements:
@@ -625,15 +624,15 @@ def generate_professional_pdf_report(response: Dict):
                             """, language="bash")
         
         except Exception as e:
-            st.error(f"❌ Error generating report: {str(e)}")
-            with st.expander("📋 Full Error Traceback"):
+            st.error(f" Error generating report: {str(e)}")
+            with st.expander(" Full Error Traceback"):
                 import traceback
                 st.code(traceback.format_exc())
 
 
 def generate_excel_report(response: Dict):
     """Generate Excel report"""
-    with st.spinner("📊 Generating Excel report..."):
+    with st.spinner(" Generating Excel report..."):
         from agents.report_generator_agent import get_report_generator_agent
 
         report_agent = get_report_generator_agent(verbose=False)
@@ -647,15 +646,15 @@ def generate_excel_report(response: Dict):
         if result["success"]:
             with open(result["filepath"], "rb") as f:
                 st.download_button(
-                    label="⬇️ Download Excel Report",
+                    label="⬇ Download Excel Report",
                     data=f,
                     file_name=result["filename"],
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     use_container_width=True,
                 )
-            st.success(f"✅ Excel generated! Size: {result['size_mb']} MB")
+            st.success(f" Excel generated! Size: {result['size_mb']} MB")
         else:
-            st.error(f"❌ Error: {result.get('error', 'Unknown error')}")
+            st.error(f" Error: {result.get('error', 'Unknown error')}")
 
 
 def render_query_history():
@@ -664,12 +663,12 @@ def render_query_history():
         return
 
     st.markdown("---")
-    st.markdown("### 📜 Recent Queries")
+    st.markdown("###  Recent Queries")
 
     recent_queries = st.session_state.query_history[-5:][::-1]
 
     for i, item in enumerate(recent_queries):
-        with st.expander(f"🕐 {item['timestamp']} - {item['query'][:60]}..."):
+        with st.expander(f" {item['timestamp']} - {item['query'][:60]}..."):
             st.write(f"**Full Query:** {item['query']}")
             st.write(
                 f"**Intent:** {item['result']['parsed_query'].get('intent', 'N/A')}"
@@ -692,7 +691,7 @@ def main():
     # Minimal Footer
     st.markdown("---")
     st.markdown(
-        '<p style="text-align: center; color: #999; font-size: 0.85rem;">Pharma Agentic AI | Powered by Ollama & CrewAI</p>',
+        '<p style="text-align: center; color: #999; font-size: 0.85rem;">PharmAID - An Agentic AI solution | Powered by Ollama & CrewAI</p>',
         unsafe_allow_html=True,
     )
 

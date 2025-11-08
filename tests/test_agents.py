@@ -27,7 +27,7 @@ try:
     DRUG_DB_AVAILABLE = True
 except ImportError:
     DRUG_DB_AVAILABLE = False
-    print("⚠️  Drug Database Agent not found - skipping related tests")
+    print(" Drug Database Agent not found - skipping related tests")
 
 
 class TestDrugDatabaseAgent:

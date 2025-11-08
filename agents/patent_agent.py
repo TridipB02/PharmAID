@@ -39,7 +39,7 @@ class PatentAgent:
         self.fetcher = EPOPatentFetcher(verbose=verbose)
 
         if self.verbose:
-            print("✓ Patent Agent initialized")
+            print(" Patent Agent initialized")
 
     def _filter_keywords(self, keywords: List[str]) -> List[str]:
         """
@@ -166,7 +166,7 @@ class PatentAgent:
 
         if self.verbose:
             print(
-                f"✓ Search complete - {results['total_patents_found']} unique patents found"
+                f" Search complete - {results['total_patents_found']} unique patents found"
             )
 
         return results
@@ -584,4 +584,4 @@ if __name__ == "__main__":
     )
     print(json.dumps(comparison, indent=2))
 
-    print("\n✓ All Patent Agent tests completed!")
+    print("\n All Patent Agent tests completed!")
