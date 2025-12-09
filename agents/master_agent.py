@@ -16,6 +16,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
@@ -1004,7 +1006,7 @@ Example:
 
     def execute_tasks(self, tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Execute tasks by calling worker agents
+        Execute tasks by calling worker agents IN PARALLEL
         NOW WITH DRUG DATABASE ENRICHMENT
         """
         responses = []
@@ -1012,101 +1014,162 @@ Example:
 
         if self.verbose:
             print(f"\n{'='*60}")
-            print(f"TASK EXECUTION")
+            print(f"TASK EXECUTION (PARALLEL)")
             print(f"{'='*60}")
 
-        for i, task in enumerate(tasks, 1):
+        # Step 1: Execute Drug Database agent FIRST (if present)
+        drug_db_task = None
+        other_tasks = []
+
+        for task in tasks:
+            if task["agent"] == "drug_database":
+                drug_db_task = task
+            else:
+                other_tasks.append(task)
+
+        # Execute drug database enrichment first (sequential)
+        if drug_db_task:
+            agent = self.worker_agents.get("drug_database")
+            if agent:
+                try:
+                    if self.verbose:
+                        print(f"\n[PRIORITY] Executing: drug_database - {drug_db_task['action']}")
+
+                    result = getattr(agent, drug_db_task["action"])(**drug_db_task["params"])
+                    enriched_drug_data = result
+
+                    responses.append({
+                        "agent": "drug_database",
+                        "action": drug_db_task["action"],
+                        "success": True,
+                        "data": result,
+                        "task_description": drug_db_task.get("description", ""),
+                    })
+
+                    if self.verbose:
+                        print(f"  ✓ Success - Enriched {len(result)} drug(s)")
+                
+                except Exception as e:
+                    if self.verbose:
+                        print(f"  ✗ Error: {str(e)}")
+                    responses.append({
+                        "agent": "drug_database",
+                        "success": False,
+                        "error": str(e),
+                        "data": None,
+                    })
+
+        # Step 2: Execute other agents IN PARALLEL
+        if other_tasks:
+            if self.verbose:
+                print(f"\n🚀 Running {len(other_tasks)} agents in parallel...")
+
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                # Submit all tasks at once
+                future_to_task = {
+                    executor.submit(
+                        self._execute_single_task, 
+                        task, 
+                        enriched_drug_data
+                    ): task 
+                for task in other_tasks
+                }
+
+                # Collect results as they complete
+                completed = 0
+                for future in as_completed(future_to_task):
+                    task = future_to_task[future]
+                    agent_name = task["agent"]
+
+                    try:
+                        result = future.result(timeout=45)  # 45 second timeout per agent
+                        responses.append(result)
+                        completed += 1
+                    
+                        if self.verbose:
+                            status = "✓" if result.get("success") else "✗"
+                            print(f"  [{completed}/{len(other_tasks)}] {status} {agent_name}")
+
+                    except Exception as e:
+                        if self.verbose:
+                            print(f"  ✗ {agent_name} failed: {str(e)}")
+                        responses.append({
+                            "agent": agent_name,
+                            "success": False,
+                            "error": str(e),
+                            "data": None,
+                        })
+                        completed += 1
+
+        if self.verbose:
+            successful = sum(1 for r in responses if r.get("success"))
+            print(f"\n✅ Completed: {successful}/{len(responses)} agents successful")
+
+        return responses
+            
+    def _execute_single_task(
+            self, 
+           task: Dict[str, Any], 
+           enriched_drug_data: Dict[str, Any]
+        ) -> Dict[str, Any]:
+            """
+            Execute a single task (helper for parallel execution)
+            Args:
+                task: Task dictionary
+                enriched_drug_data: Drug database enrichment data
+            Returns:
+                Response dictionary
+            """
             agent_name = task["agent"]
             action = task["action"]
             params = task["params"]
-
-            if self.verbose:
-                print(f"\n[{i}/{len(tasks)}] Executing: {agent_name} - {action}")
-
-            # Get the worker agent
-            agent = self.worker_agents.get(agent_name)
-
-            if not agent:
-                if self.verbose:
-                    print(f"  ✗ Agent '{agent_name}' not available")
-                responses.append(
-                    {
+    
+            try:
+                # Get the worker agent
+                agent = self.worker_agents.get(agent_name)
+        
+                if not agent:
+                    return {
                         "agent": agent_name,
                         "success": False,
                         "error": f"Agent '{agent_name}' not initialized",
                         "data": None,
                     }
-                )
-                continue
-
-            try:
-                # Call the agent's action method
-                if agent_name == "drug_database":
-                    result = getattr(agent, action)(**params)
-                    enriched_drug_data = result
-                    responses.append(
-                        {
-                            "agent": agent_name,
-                            "action": action,
-                            "success": True,
-                            "data": result,
-                            "task_description": task.get("description", ""),
-                        }
-                    )
-                    if self.verbose:
-                        print(f"  ✓ Success - Enriched {len(result)} drug(s)")
-                    continue
-
+                
+                # Enrich params with drug data if applicable
                 if enriched_drug_data and agent_name in [
-                    "clinical_trials",
-                    "patent",
-                    "iqvia",
-                    "web_intelligence",
+                    "clinical_trials", "patent", "iqvia", "web_intelligence"
                 ]:
                     params = self._enrich_params_with_drug_data(
                         agent_name, params, enriched_drug_data
                     )
-                if self.verbose:
-                    print(f"  → Enhanced with drug database context")
 
+                # Execute the agent action
                 if hasattr(agent, action):
                     result = getattr(agent, action)(**params)
-                    responses.append(
-                        {
-                            "agent": agent_name,
-                            "action": action,
-                            "success": True,
-                            "data": result,
-                            "task_description": task.get("description", ""),
-                        }
-                    )
-
-                    if self.verbose:
-                        print(f"  ✓ Success")
+            
+                    return {
+                        "agent": agent_name,
+                        "action": action,
+                        "success": True,
+                        "data": result,
+                        "task_description": task.get("description", ""),
+                    }
                 else:
-                    if self.verbose:
-                        print(f"  ✗ Method '{action}' not found")
-                    responses.append(
-                        {
-                            "agent": agent_name,
-                            "success": False,
-                            "error": f"Method '{action}' not found on agent",
-                            "data": None,
-                        }
-                    )
-            except Exception as e:
-                if self.verbose:
-                    print(f"  ✗ Error: {str(e)}")
-                responses.append(
-                    {
+                    return {
                         "agent": agent_name,
                         "success": False,
-                        "error": str(e),
+                        "error": f"Method '{action}' not found on agent",
                         "data": None,
                     }
-                )
-
-        return responses
+            
+            except Exception as e:
+                return {
+                    "agent": agent_name,
+                    "success": False,
+                    "error": str(e),
+                    "data": None,
+                }
 
     def _enrich_params_with_drug_data(
         self, agent_name: str, params: Dict[str, Any], enriched_data: Dict[str, Any]
