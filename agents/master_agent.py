@@ -285,80 +285,60 @@ Example:
         query_lower = query.lower()
         required_agents = set(parsed.get("required_agents", []))
 
-        # Check for clinical trials keywords
-        if any(
-            word in query_lower
-            for word in [
-                "trial",
-                "clinical",
-                "phase 1",
-                "phase 2",
-                "phase 3",
-                "phase 4",
-                "phase",
-                "study",
-                "pipeline",
-            ]
-        ):
-            if "clinical_trials" not in required_agents:
-                required_agents.add("clinical_trials")
-                if self.verbose:
-                    print("  Added 'clinical_trials' agent (detected from keywords)")
-
-        # Check for market keywords
-        if any(
-            word in query_lower
-            for word in [
-                "market",
-                "sales",
-                "revenue",
-                "launch",
-                "competition",
-                "emerging",
-                "cagr",
-            ]
-        ):
-            if "iqvia" not in required_agents:
-                required_agents.add("iqvia")
-                if self.verbose:
-                    print("  Added 'iqvia' agent (detected from keywords)")
-
-        # Check for patent keywords
-        if any(
-            word in query_lower
-            for word in ["patent", "ip", "intellectual property", "expir", "fto"]
-        ):
-            if "patent" not in required_agents:
-                required_agents.add("patent")
-                if self.verbose:
-                    print("  Added 'patent' agent (detected from keywords)")
-
-        # Check for trade keywords
-        if any(
-            word in query_lower
-            for word in ["export", "import", "trade", "sourcing", "supply"]
-        ):
+        is_specific_query = False
+        trade_keywords = ["export", "import", "trade", "sourcing", "supply chain", "customs"]
+        if any(word in query_lower for word in trade_keywords):
             if "exim" not in required_agents:
                 required_agents.add("exim")
                 if self.verbose:
-                    print("  Added 'exim' agent (detected from keywords)")
+                    print("  ✓ Added 'exim' agent (strong trade keywords)")
+            is_specific_query = True
 
-        # Check for literature keywords
-        if any(
-            word in query_lower
-            for word in [
-                "publication",
-                "research",
-                "literature",
-                "pubmed",
-                "paper",
-                "guideline",
-            ]
-        ):
+        trial_keywords = ["trial", "clinical", "phase 1", "phase 2", "phase 3", "phase 4", "phase", "study", "pipeline"]
+        if any(word in query_lower for word in trial_keywords):
+            if "clinical_trials" not in required_agents:
+                required_agents.add("clinical_trials")
+                if self.verbose:
+                    print("  ✓ Added 'clinical_trials' agent (strong trial keywords)")
+
+        market_keywords = ["market", "sales", "revenue", "launch", "competition", "cagr", "market share"]
+        if any(word in query_lower for word in market_keywords):
+            if "iqvia" not in required_agents:
+                required_agents.add("iqvia")
+                if self.verbose:
+                   print("  ✓ Added 'iqvia' agent (strong market keywords)")
+
+        patent_keywords = ["patent", "ip", "intellectual property", "expir", "fto", "patent landscape"]
+        if any(word in query_lower for word in patent_keywords):
+            if "patent" not in required_agents:
+               required_agents.add("patent")
+               if self.verbose:
+                   print("  ✓ Added 'patent' agent (strong patent keywords)")
+            is_specific_query = True
+ 
+        lit_keywords = ["publication", "research", "literature", "pubmed", "paper", "guideline", "journal"]
+        if any(word in query_lower for word in lit_keywords):
             if "web_intelligence" not in required_agents:
                 required_agents.add("web_intelligence")
                 if self.verbose:
-                    print("  Added 'web_intelligence' agent (detected from keywords)")
+                  print("  ✓ Added 'web_intelligence' agent (strong literature keywords)")
+            is_specific_query = True
+ 
+        if is_specific_query and len(required_agents) > 2:
+            if "exim" in required_agents and any(kw in query_lower for kw in trade_keywords):
+                required_agents = {"exim", "drug_database"} if "drug_database" in required_agents else {"exim"}
+                if self.verbose:
+                    print("  ⚠️ Removed extra agents - query is EXIM-specific")
+        
+            elif "patent" in required_agents and any(kw in query_lower for kw in patent_keywords):
+                required_agents = {"patent", "drug_database"} if "drug_database" in required_agents else {"patent"}
+                if self.verbose:
+                    print("  ⚠️ Removed extra agents - query is patent-specific")
+            
+            elif "web_intelligence" in required_agents and any(kw in query_lower for kw in lit_keywords):
+                required_agents = {"web_intelligence", "drug_database"} if "drug_database" in required_agents else {"web_intelligence"}
+                if self.verbose:
+                    print("  ⚠️ Removed extra agents - query is literature-specific")
 
         # Update parsed dictionary
         parsed["required_agents"] = list(required_agents)
@@ -405,6 +385,7 @@ Example:
     def _fallback_parsing(self, user_query: str) -> Dict[str, Any]:
         """
         Fallback parsing using keyword matching and heuristics
+        STRICTER: Only selects agents that are EXPLICITLY mentioned
 
         Args:
             user_query: User's query string
@@ -504,8 +485,19 @@ Example:
 
         # If no specific agents, use general set
         if not required_agents:
-            required_agents = ["iqvia", "clinical_trials", "web_intelligence"]
-
+            if intent == "trade_analysis":
+                required_agents = ["exim"]
+            elif intent == "clinical_trials":
+                required_agents = ["clinical_trials"]
+            elif intent == "market_analysis":
+                required_agents = ["iqvia"]
+            elif intent == "patent_search":
+                required_agents = ["patent"]
+            elif intent == "literature_search":
+                required_agents = ["web_intelligence"]
+            else:
+                required_agents = ["iqvia"]
+            
         # Extract entities
         entities = self._extract_entities_heuristic(user_query)
 
@@ -1232,11 +1224,11 @@ Example:
         parsed_query: Dict[str, Any],
     ) -> str:
         """
-        OPTIMIZED synthesis with TOP 5 detailed + smart summaries
+       OPTIMIZED synthesis - ONLY shows data from agents that actually ran
         """
         if self.verbose:
             print(f"\n{'='*60}")
-            print(f"RESPONSE SYNTHESIS (TOP 5 STRATEGY)")
+            print(f"RESPONSE SYNTHESIS (STRICT MODE")
             print(f"{'='*60}")
 
         if not agent_responses:
@@ -1253,6 +1245,11 @@ Example:
                 ]
             )
             return f"All agents failed:\n{error_summary}"
+        
+        agents_that_ran = [r["agent"].upper() for r in successful_responses]
+        if self.verbose:
+            print(f"  ✓ Agents that ran successfully: {', '.join(agents_that_ran)}")
+
 
         # OPTIMIZATION: Truncate data before formatting
         compiled_data = []
@@ -1272,9 +1269,10 @@ Example:
             )
 
         # OPTIMIZED SYNTHESIS PROMPT - Shorter and more focused
-        synthesis_prompt = f"""You are a pharmaceutical analyst. Create a structured report from this data.
+        synthesis_prompt = f"""You are a pharmaceutical analyst. Create a structured report ONLY from the data provided below.
 
 QUERY: "{original_query}"
+AGENTS THAT RAN: {', '.join(agents_that_ran)}
 
 DATA FROM AGENTS:
 {''.join(compiled_data)}
@@ -1291,119 +1289,69 @@ DATA FROM AGENTS:
 - ONLY create sections for agents that appear in the data
 - If an agent is NOT in the data above, DO NOT create that section
 - DO NOT invent or hallucinate data for missing agents
+7.**ONLY show sections for agents listed in "AGENTS THAT RAN" above**
+8.**DO NOT write "[ONLY IF X AGENT appears...]" - just show the section or skip it entirely**
+9.**If an agent didn't run, completely skip that section**
 
-FORMAT:
+FORMAT YOUR RESPONSE LIKE THIS:
 
 ## Executive Summary
-[2-3 sentences with key numbers from ONLY the agents that ran]
+[2-3 sentences with key findings from ONLY the agents that ran. Include actual numbers.]
 
 ---
 
 ## Detailed Findings
-[FOR EACH SECTION BELOW: Only include if that agent's data appears above]
+[FOR EACH SECTION BELOW: Only include if that specific agent appears in "AGENTS THAT RAN" list]
 
-###  Market Analysis
-[ONLY IF "IQVIA AGENT" appears in data above]
-[If IQVIA not present: SKIP THIS ENTIRE SECTION]
-**Drug:** [Extract from drug_analyses[0].drug_name]
-- Sales: $[current_sales_usd_million]M | CAGR: [cagr_percent]% | Trend: [market_trend]
-- Historical (last 5 years): [Extract from data_points array]
+{"###  Market Analysis (if IQVIA in agents_that_ran)" if "IQVIA" in agents_that_ran else ""}
+{"**Drug:** [drug_name]" if "IQVIA" in agents_that_ran else ""}
+{"- Sales: $[X]M | CAGR: [Y]% | Trend: [trend]" if "IQVIA" in agents_that_ran else ""}
+{"- Top Markets: [list top 3 countries with values]" if "IQVIA" in agents_that_ran else ""}
+{"" if "IQVIA" in agents_that_ran else ""}
 
----
+{"###  Trade Analysis (if EXIM in agents_that_ran)" if "EXIM" in agents_that_ran else ""}
+{"**Balance:** [trade_balance] | **Total Value:** $[X]M" if "EXIM" in agents_that_ran else ""}
+{"" if "EXIM" in agents_that_ran else ""}
+{"**Top 5 Trade Partners:**" if "EXIM" in agents_that_ran else ""}
+{"1. [Country]: $[Value] ([Import/Export])" if "EXIM" in agents_that_ran else ""}
+{"2. [Country]: $[Value] ([Import/Export])" if "EXIM" in agents_that_ran else ""}
+{"3. [Country]: $[Value] ([Import/Export])" if "EXIM" in agents_that_ran else ""}
+{"4. [Country]: $[Value] ([Import/Export])" if "EXIM" in agents_that_ran else ""}
+{"5. [Country]: $[Value] ([Import/Export])" if "EXIM" in agents_that_ran else ""}
+{"" if "EXIM" in agents_that_ran else ""}
+{"**Additional Partners:** [summary if exists]" if "EXIM" in agents_that_ran else ""}
 
-###  Trade Analysis
-[ONLY IF "EXIM AGENT" appears in data above]
-[If EXIM not present: SKIP THIS ENTIRE SECTION]
-**Balance:** [trade_balance] | **Sources:** [data_sources]
+{"###  Clinical Trials (if CLINICAL_TRIALS in agents_that_ran)" if "CLINICAL_TRIALS" in agents_that_ran else ""}
+{"**Stats:** Total: [X] | Active: [Y] | Phase 3: [Z]" if "CLINICAL_TRIALS" in agents_that_ran else ""}
+{"" if "CLINICAL_TRIALS" in agents_that_ran else ""}
+{"**Top 5 Trials - FULL DETAILS:**" if "CLINICAL_TRIALS" in agents_that_ran else ""}
+{"[Show detailed trial info for trials 1-5]" if "CLINICAL_TRIALS" in agents_that_ran else ""}
+{"" if "CLINICAL_TRIALS" in agents_that_ran else ""}
+{"**Additional Trials:** [summary]" if "CLINICAL_TRIALS" in agents_that_ran else ""}
 
-**Top 5 Trade Partners:**
-1. [country]: $[value] ([flow])
-2. [country]: $[value] ([flow])
-3. [country]: $[value] ([flow])
-4. [country]: $[value] ([flow])
-5. [country]: $[value] ([flow])
+{"###  Patents (if PATENT in agents_that_ran)" if "PATENT" in agents_that_ran else ""}
+{"**Stats:** Total: [X] | Expiring Soon: [Y] | FTO Risk: [level]" if "PATENT" in agents_that_ran else ""}
+{"" if "PATENT" in agents_that_ran else ""}
+{"**Top 5 Patents:**" if "PATENT" in agents_that_ran else ""}
+{"[Show detailed patent info]" if "PATENT" in agents_that_ran else ""}
 
-**Remaining Partners (if >5):** [Extract from trade_records_summary field if exists]
-
----
-
-###  Clinical Trials
-[ONLY IF "CLINICAL_TRIALS AGENT" appears in data above]
-[If Clinical Trials not present: SKIP THIS ENTIRE SECTION]
-**Stats:** Total: [total_trials_found] | Active: [active] | Phase 3: [count]
-
-**Top 5 Trials - FULL DETAILS:**
-
-1. **NCT[nct_id]**: [title]
-   - Phase: [phase] | Status: [status]
-   - Sponsor: [sponsor]
-   - Interventions: [interventions]
-   - Conditions: [conditions]
-   - Timeline: [start_date] to [completion_date]
-
-2. **NCT[nct_id]**: [title]
-   - Phase: [phase] | Status: [status]
-   - Sponsor: [sponsor]
-   - Interventions: [interventions]
-   - Conditions: [conditions]
-   - Timeline: [start_date] to [completion_date]
-
-[Repeat format for trials 3-5]
-
-**Additional Trials ([detailed_trials_remaining] more):**
-[IF detailed_trials_summary exists, copy it EXACTLY. Otherwise write: "See visualization for full details"]
-
----
-
-###  Patents (ONLY if PATENT AGENT data exists above)
-**Stats:** Total: [total_patents_found] | Expiring Soon: [expiring_soon_count] | FTO Risk: [risk_level]
-
-**Top 5 Patents:**
-
-1. **[patent_number]**: [title]
-   - Assignee: [assignee] | Filing: [filing_date]
-   - Expiry: [expiry_date] | Status: [status]
-
-2. **[patent_number]**: [title]
-   - Assignee: [assignee] | Filing: [filing_date]
-   - Expiry: [expiry_date] | Status: [status]
-
-[Continue for patents 3-5]
-
-**Additional Patents ([detailed_patents_remaining] more):**
-[IF detailed_patents_summary exists, copy it EXACTLY. Otherwise write: "See visualization for full details"]
-
-
----
-
-###  Literature (ONLY if WEB_INTELLIGENCE AGENT data exists above)
-**Total:** [total_publications_found] publications
-
-**Top 5 Publications - FULL DETAILS:**
-
-1. **PMID [pmid]**: [title]
-   - Year: [year] | Journal: [journal]
-   - Abstract: [First 150 chars of abstract]
-   - URL: https://pubmed.ncbi.nlm.nih.gov/[pmid]/
-
-[Repeat for publications 2-5]
-
-**Additional Publications ([detailed_publications_remaining] more):**
-[IF detailed_publications_summary exists, copy it EXACTLY. Otherwise: "See visualization"]
+{"###  Literature (if WEB_INTELLIGENCE in agents_that_ran)" if "WEB_INTELLIGENCE" in agents_that_ran else ""}
+{"**Total:** [X] publications" if "WEB_INTELLIGENCE" in agents_that_ran else ""}
+{"" if "WEB_INTELLIGENCE" in agents_that_ran else ""}
+{"**Top 5 Publications:**" if "WEB_INTELLIGENCE" in agents_that_ran else ""}
+{"[Show publication details]" if "WEB_INTELLIGENCE" in agents_that_ran else ""}
 
 ---
 
 ## Key Insights
-1. [Insight based on actual data above with numbers]
-2. [Insight based on actual data above with numbers]
-3. [Insight based on actual data above with numbers]
+[3-5 insights based ONLY on the agents that ran. Use actual numbers from data.]
 
 ## Strategic Recommendations
 1. [Recommendation with data justification and timeline]
 2. [Recommendation with data justification and timeline]
 
 ## Data Sources
-[List agents that actually ran and their record counts]
+[List ONLY the agents from "AGENTS THAT RAN" with their record counts]
 ---
 
  CRITICAL RULES:
@@ -1411,7 +1359,8 @@ FORMAT:
 - Items 6+: Copy the _summary field VERBATIM (don't add brackets)
 - If _summary doesn't exist: Write "See visualization for complete details"
 - NEVER write placeholder text like "[Extract from...]"
-
+- Skip entire sections if agent didn't run
+- Use REAL data from above
 
 Write the report now:"""
 
